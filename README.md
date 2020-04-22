@@ -4,7 +4,7 @@
 Mountain + Bestie
 
 <p align="left">
-<img src="./readme_img/logo.png" width = "100%">
+<img src="./readme_img/logo.png" width = "50%">
 </p>
 
 
