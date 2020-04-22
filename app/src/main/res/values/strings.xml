@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Mountie</string>
     <string name="main">mountie</string>
+    <string name="loading">로딩중입니다. </string>
 </resources>
