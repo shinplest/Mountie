@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MobileTermProject</string>
-    <string name="main_goodbye">오늘 모두 고생하셨습니다.\n모두 편히 쉬세요 :)</string>
+    <string name="app_name">Mountie</string>
+    <string name="main">mountie</string>
 </resources>

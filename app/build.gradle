@@ -21,6 +21,15 @@ android {
         }
     }
 
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../keystore/debug.jks')
+            storePassword 'android'
+        }
+    }
+
 }
 
 dependencies {
