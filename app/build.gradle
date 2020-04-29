@@ -47,4 +47,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.afollestad.material-dialogs:core:3.2.1'
     implementation 'com.facebook.fresco:fresco:2.1.0'
+    implementation 'com.naver.maps:map-sdk:3.8.0'
+    implementation 'com.naver.maps.open:naver-map-ncp-api:2.1.7'
+
 }

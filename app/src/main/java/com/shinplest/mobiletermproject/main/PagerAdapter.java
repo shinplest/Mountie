@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.shinplest.mobiletermproject.dashboard.DashBoardFragment;
-import com.shinplest.mobiletermproject.map.MapFragment;
+import com.shinplest.mobiletermproject.map.MapFragmentMain;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 
 class PagerAdapter extends FragmentStatePagerAdapter {
@@ -20,11 +20,11 @@ class PagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return new RecordFragment();
             case 1:
-                return new MapFragment();
+                return new MapFragmentMain();
             case 2:
                 return new DashBoardFragment();
         }
-        return new MapFragment();
+        return new MapFragmentMain();
     }
 
     @Override
