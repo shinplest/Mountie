@@ -45,4 +45,6 @@ dependencies {
     // https://github.com/square/retrofit/tree/master/retrofit-converters/gson
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.afollestad.material-dialogs:core:3.2.1'
+    implementation 'com.facebook.fresco:fresco:2.1.0'
 }
