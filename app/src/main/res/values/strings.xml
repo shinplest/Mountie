@@ -1,5 +1,9 @@
 <resources>
+    <!--공통 스트링-->
     <string name="app_name">Mountie</string>
     <string name="main">mountie</string>
     <string name="loading">로딩중입니다. </string>
+    <string name="record">기록</string>
+    <string name="map">맵</string>
+    <string name="dashboard">대시 보드</string>
 </resources>
