@@ -4,23 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 
-public class MapFragmentMain extends Fragment implements OnMapReadyCallback {
+public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
@@ -51,7 +49,7 @@ public class MapFragmentMain extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.map_fragment_main, container, false);
         FragmentManager fm = getChildFragmentManager();
-        MapFragment mapFragment = (MapFragment)fm.findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 
         if (mapFragment == null) {
             mapFragment = MapFragment.newInstance();
