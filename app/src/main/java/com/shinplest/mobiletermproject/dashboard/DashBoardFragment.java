@@ -8,12 +8,12 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
+import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 
 
-public class DashBoardFragment extends Fragment {
+public class DashBoardFragment extends BaseFragment {
     public DashBoardFragment() {
 
     }
@@ -27,7 +27,7 @@ public class DashBoardFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dashboard_fragment, container, false);
-        Button RandomMode = view.findViewById(R.id.ramdonmode);
+        showCustomToast("이렇게 쉽게 토스트 메세지를 만들수 있게 했습니다. ");
         return view;
     }
 }
