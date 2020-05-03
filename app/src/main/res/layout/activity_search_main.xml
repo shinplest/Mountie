@@ -17,7 +17,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:scaleType="fitCenter"
-            android:src="@drawable"
+            android:src="@drawable/back"
             android:background="@color/white"/>
 
         <EditText
