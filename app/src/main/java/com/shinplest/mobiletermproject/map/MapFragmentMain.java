@@ -1,9 +1,11 @@
 package com.shinplest.mobiletermproject.map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,7 @@ import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
+
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
@@ -60,6 +63,15 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
                 new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         mapFragment.getMapAsync(this);
+
+        Button button1 = view.findViewById(R.id.editSearchBar);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(),SearchMainActivity.class);
+               startActivity(intent);
+            }
+        });
         return view;
     }
 
