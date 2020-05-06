@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name="ApplicationClass"
+        android:name=".ApplicationClass"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -13,7 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".record.RecordAdapter"></activity>
+        <activity android:name=".map.SearchMainActivity"></activity>
+
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
