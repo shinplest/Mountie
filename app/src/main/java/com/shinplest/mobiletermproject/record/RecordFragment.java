@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 public class RecordFragment extends Fragment {
 
-    private ArrayList<RecordData> arrayList;
     private RecordAdapter recordAdapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
@@ -32,7 +31,6 @@ public class RecordFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.record_fragment, container, false);
-        arrayList = new ArrayList<>();
 
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -43,8 +41,6 @@ public class RecordFragment extends Fragment {
             linearLayoutManager = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            recordAdapter = new RecordAdapter(arrayList);
-            recyclerView.setAdapter(recordAdapter);
         }
 
         return view;

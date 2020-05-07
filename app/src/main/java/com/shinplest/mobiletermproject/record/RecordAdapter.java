@@ -16,11 +16,7 @@ import java.util.List;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder> {
 
-    private List<RecordData> list;
-
-    public RecordAdapter(ArrayList<RecordData> arrayList) {
-        this.list = arrayList;
-    }
+    private List<String> list;
 
     @NonNull
     @Override
@@ -32,13 +28,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecordAdapter.ViewHolder holder, int position) {
-
-        RecordData recordData= list.get(position);
-
-        holder.mainRecord.setImageResource(recordData.getMainRecord());
-        holder.recentRecord.setText(recordData.toString());
-        holder.lastRecord.setText(recordData.toString());
-        holder.subRecord1.setImageResource(recordData.getSubRecord1());
 
     }
 
@@ -56,11 +45,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            recentRecord = (TextView) itemView.findViewById(R.id.recentRecord);
-            mainRecord = (ImageView) itemView.findViewById(R.id.mainRecord);
-            lastRecord = (TextView) itemView.findViewById(R.id.lastRecord);
-            subRecord1= (ImageView) itemView.findViewById(R.id.subRecord1);
 
         }
     }

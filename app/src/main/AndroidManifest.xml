@@ -14,9 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".record.RecordAdapter"></activity>
         <activity android:name=".map.SearchMainActivity"></activity>
-
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
