@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/mainCard"
+        android:id="@+id/record_Card"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_margin="25dp"
@@ -20,21 +20,19 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/recentRecord"
+                android:id="@+id/record_txt"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
                 android:background="#B7F0B1"
-                android:text=" 기록"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/mainRecord"
+                android:id="@+id/record_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/recentRecord"
-                android:scaleType="centerCrop"
-                android:src="@drawable/map" />
+                android:layout_below="@+id/record_txt"
+                android:scaleType="centerCrop" />
 
         </RelativeLayout>
 
