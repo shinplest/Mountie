@@ -45,7 +45,7 @@ public class RecordFragment extends Fragment {
     }
 
     //데이터 추가
-    public void addItem(Drawable imageRecord, String text){
+    public void addItem(Drawable imageRecord, String text) {
         RecordItem item = new RecordItem();
 
         item.setRecord_txt(text);
