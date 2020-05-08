@@ -11,14 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
+
+import java.util.Arrays;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
@@ -32,6 +36,14 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PathOverlay path = new PathOverlay();
+        path.setCoords(Arrays.asList(
+                new LatLng(37.57152, 126.97714),
+                new LatLng(37.56607, 126.98268),
+                new LatLng(37.56445, 126.97707),
+                new LatLng(37.55855, 126.97822)
+        ));
+        path.setMap(naverMap);
     }
 
     @Override
