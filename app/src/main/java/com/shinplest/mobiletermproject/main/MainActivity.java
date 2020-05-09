@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setViewPager();
-        getCourseList("PMNTN_구룡산_116500101.json"); //임시로 파일이름 바로 넣었으니 변경 부탁드립니다.
+        getCourseList("구룡산.json"); //임시로 파일이름 바로 넣었으니 변경 부탁드립니다.
     }
 
     private void setViewPager() {
