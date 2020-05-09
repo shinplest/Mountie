@@ -7,19 +7,18 @@ public class Course {
     private Geometry geometry;
     private ArrayList<Object> course;
 
-    public Course(){
+    public Course() {
 
     }
 
-    public Course(Attributes attributes, Geometry geometry){
+    public Course(Attributes attributes, Geometry geometry) {
         this.attributes = attributes;
         this.geometry = geometry;
     }
 
     public ArrayList<Object> getCourse() {
-           return course;
+        return course;
     }
-
 
     public Attributes getAttributes() {
         return attributes;
@@ -36,9 +35,4 @@ public class Course {
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
-
-
-
-
-
 }
