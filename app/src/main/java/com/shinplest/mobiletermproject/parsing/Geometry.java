@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Geometry {
     private ArrayList<ArrayList<ArrayList<Double>>> paths;
+
     public ArrayList<ArrayList<ArrayList<Double>>> getPath() {
         return paths;
     }

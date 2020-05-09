@@ -19,10 +19,13 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.shinplest.mobiletermproject.ApplicationClass;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 
 import java.util.Arrays;
+
+import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
@@ -93,13 +96,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
 
         //path overlay -> 함수화 예정
         PathOverlay path = new PathOverlay();
-        path.setCoords(Arrays.asList(
-                new LatLng(37.49581, 127.12815),
-                new LatLng(37.56607, 126.98268),
-                new LatLng(37.56445, 126.97707),
-                new LatLng(37.55855, 126.97822)
-        ));
+        path.setCoords(testlatlng);
         path.setMap(naverMap);
 
     }
+
 }
