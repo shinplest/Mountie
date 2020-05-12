@@ -14,13 +14,12 @@ import com.shinplest.mobiletermproject.main.MainActivity;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends BaseActivity{
 
-    private Window mWindow;
+    //private Window mWindow;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.SplashTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
