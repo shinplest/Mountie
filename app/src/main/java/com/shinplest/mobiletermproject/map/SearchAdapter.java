@@ -1,25 +1,22 @@
 package com.shinplest.mobiletermproject.map;
 
 import android.content.Context;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.parsing.Course;
 
 import java.util.ArrayList;
 import java.util.List;
-public class SearchAdapter extends BaseAdapter{
-
-    private ImageView iconImageView;
-    private TextView contentTextView;
+public class SearchAdapter extends BaseAdapter {
 
     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>();
 
@@ -70,30 +67,27 @@ public class SearchAdapter extends BaseAdapter{
 
         viewHolder.label.setText(list.get(position));
 
-
         LinearLayout mountainList = (LinearLayout)convertView.findViewById(R.id.mountain_list);
         mountainList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(v.getContext(),course.class);
 
-                //intent.putExtra("info",listViewItemList.get(0).getCourseInfo());
-                //context.startActivity(intent);
-                Toast.makeText(v.getContext(),listViewItemList.get(0).getCourseInfo().get(0).getAttributes().getMNTN_NM(), Toast.LENGTH_SHORT).show();
+                Fragment fragment = new MapFragmentMain();
+                Bundle bundle = new Bundle(1);
+                bundle.putString("name",listViewItemList.get(position).getContent());
+                fragment.setArguments(bundle);
+
+                Toast.makeText(v.getContext(),listViewItemList.get(position).getContent(), Toast.LENGTH_SHORT).show();
             }
         });
 
         return convertView;
     }
 
-    public void addData(String content, ArrayList<Course> courseInfo)
+    public void addData(String content)
     {
         ListViewItem item = new ListViewItem();
-
         item.setContent(content);
-        item.setCourseInfo(courseInfo);
-
-        Log.d(tag, item.getCourseInfo().get(0).getAttributes().getMNTN_NM());
 
         listViewItemList.add(item);
 

@@ -42,6 +42,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     private NaverMap naverMap;
     private ArrayList<Course> mCourse;
 
+    public static MapFragmentMain mContext;
+
     public MapFragmentMain() {
     }
 
@@ -54,6 +56,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         for (int i = 0; i < mCourse.size(); i++) {
             testlatlng.add(convertTmToLatLng(mCourse.get(i).getGeometry()));
         }
+
+        mContext = this;
     }
 
     @Override
@@ -116,7 +120,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     }
 
 
-    private ArrayList<Course> getCourseList(String fileName) {
+    public ArrayList<Course> getCourseList(String fileName) {
         ArrayList<Course> courses = new ArrayList<>();
         Gson gson = new Gson();
         try {

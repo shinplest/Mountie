@@ -12,18 +12,11 @@ public class ListViewItem {
     public void setContent(String content){
         contentStr = content;
     }
-    public void setCourseInfo(ArrayList<Course> info)
-    {
-        CourseInfo = info;
-    }
 
     public String getContent()
     {
         return this.contentStr;
     }
-    public ArrayList<Course> getCourseInfo()
-    {
-        return this.CourseInfo;
-    }
+
 
 }
