@@ -1,10 +1,10 @@
 package com.shinplest.mobiletermproject.main;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
-import com.shinplest.mobiletermproject.ApplicationClass;
 import com.shinplest.mobiletermproject.BaseActivity;
 import com.shinplest.mobiletermproject.NonSwipeableViewPager;
 import com.shinplest.mobiletermproject.R;
@@ -25,6 +25,7 @@ import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
 public class MainActivity extends BaseActivity {
 
     ArrayList<Course> mCourse;
+    public static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,8 @@ public class MainActivity extends BaseActivity {
         for (int i = 0; i < mCourse.size(); i++) {
            testlatlng = convertTmToLatLng(mCourse.get(1).getGeometry());
         }
+
+        mContext = this;
     }
 
     private void setViewPager() {
@@ -50,7 +53,7 @@ public class MainActivity extends BaseActivity {
         tabLayout.getTabAt(2).setText(getString(R.string.dashboard));
     }
 
-    private ArrayList<Course> getCourseList(String fileName) {
+    public ArrayList<Course> getCourseList(String fileName) {
         ArrayList<Course> courses = new ArrayList<>();
         Gson gson = new Gson();
         try {

@@ -11,6 +11,9 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.main.MainActivity;
+import com.shinplest.mobiletermproject.parsing.Attributes;
+import com.shinplest.mobiletermproject.parsing.Course;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,10 @@ public class SearchMainActivity extends AppCompatActivity {
     private SearchAdapter adapter;
     private ArrayList<String> arrayList;
 
+    String name;
+    ArrayList<Course> cors;
+
+    String tag = "check";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +47,7 @@ public class SearchMainActivity extends AppCompatActivity {
         adapter = new SearchAdapter(list,this);
 
         listView.setAdapter(adapter);
+        adapter.addData(name,cors);
 
         editSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -92,10 +100,14 @@ public class SearchMainActivity extends AppCompatActivity {
     }
     private void settingList()
     {
-        list.add("관악산");
-        list.add("구룡산");
-        list.add("대모산");
-        list.add("으악");
-        list.add("훙앵웅");
+        //일단은 구룡산만 넣어두기
+        cors = ((MainActivity)MainActivity.mContext).getCourseList("구룡산.json");
+        Attributes att = cors.get(0).getAttributes();
+        name = att.getMNTN_NM();
+
+        list.add(name);
+        list.add("이건테스트");
+        list.add("ㅎㅎ");
+
     }
 }
