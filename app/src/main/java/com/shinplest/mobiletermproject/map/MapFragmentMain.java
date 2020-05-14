@@ -2,7 +2,6 @@ package com.shinplest.mobiletermproject.map;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.gson.Gson;
-import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
@@ -21,7 +19,6 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
-import com.shinplest.mobiletermproject.ApplicationClass;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.parsing.Attributes;
@@ -34,7 +31,6 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.shinplest.mobiletermproject.ApplicationClass.convertTmToLatLng;
 import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
@@ -45,6 +41,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
     private ArrayList<Course> mCourse;
+
+    public static MapFragmentMain mContext;
 
     public MapFragmentMain() {
     }
@@ -58,6 +56,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         for (int i = 0; i < mCourse.size(); i++) {
             testlatlng.add(convertTmToLatLng(mCourse.get(i).getGeometry()));
         }
+
+        mContext = this;
     }
 
     @Override
@@ -90,8 +90,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
 
         mapFragment.getMapAsync(this);
 
-        Button button1 = view.findViewById(R.id.editSearchBar);
-        button1.setOnClickListener(new View.OnClickListener() {
+        Button searchBtn = view.findViewById(R.id.editSearchBar);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
@@ -120,7 +120,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     }
 
 
-    private ArrayList<Course> getCourseList(String fileName) {
+    public ArrayList<Course> getCourseList(String fileName) {
         ArrayList<Course> courses = new ArrayList<>();
         Gson gson = new Gson();
         try {
