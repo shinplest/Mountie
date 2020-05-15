@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import kr.hyosang.coordinate.*;
 
 public class ApplicationClass extends Application {
 
@@ -46,21 +47,22 @@ public class ApplicationClass extends Application {
     }
 
     public static ArrayList<LatLng> convertTmToLatLng(Geometry geometry) {
-        double latitude = 0;
-        double longtitude = 0;
+        double N = 0;
+        double E = 0;
         ArrayList<LatLng> latLngArrayList = new ArrayList<>();
 
         ArrayList<ArrayList<Double>> path = geometry.getPath().get(0);
         Log.d("ApplicationClass", "path size: " + path.size());
 
         for (int i = 0; i < path.size(); i++) {
-            latitude = path.get(i).get(0);
-            longtitude = path.get(i).get(1);
-            Log.d("ApplicationClass", "latitude: " + latitude);
-            Log.d("ApplicationClass", "latitude: " + longtitude);
-            Tm128 tm128 = new Tm128(latitude, longtitude);
-            latLngArrayList.add(tm128.toLatLng());
+            E = path.get(i).get(0);
+            N = path.get(i).get(1);
+            Log.d("ApplicationClass", "E: " + E);
+            Log.d("ApplicationClass", "N: " + N);
+            Tm128 tm128 = new Tm128(N,E);
+//            latLngArrayList.add(tm128);
         }
         return latLngArrayList;
     }
+
 }
