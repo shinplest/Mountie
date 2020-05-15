@@ -9,7 +9,6 @@ import com.naver.maps.geometry.Tm128;
 import com.naver.maps.geometry.Utmk;
 import com.shinplest.mobiletermproject.parsing.Geometry;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +17,10 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import kr.hyosang.coordinate.*;
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 
 public class ApplicationClass extends Application {
 
@@ -55,12 +58,21 @@ public class ApplicationClass extends Application {
         Log.d("ApplicationClass", "path size: " + path.size());
 
         for (int i = 0; i < path.size(); i++) {
+
             E = path.get(i).get(0);
             N = path.get(i).get(1);
-            Log.d("ApplicationClass", "E: " + E);
-            Log.d("ApplicationClass", "N: " + N);
-            Tm128 tm128 = new Tm128(N,E);
-//            latLngArrayList.add(tm128);
+            //파싱한 기존 데이터
+            Log.d("ApplicationClass", "latitude: " + E);
+            Log.d("ApplicationClass", "longtitude: " + N);
+
+            //희진님dl 찾은 라이브러리로 좌표계 별 변환하는 코드
+            CoordPoint pt = new CoordPoint(E, N);
+            CoordPoint ktm = TransCoord.getTransCoord(pt, TransCoord.COORD_TYPE_TM, TransCoord.COORD_TYPE_KTM);
+            Tm128 tm128 = new Tm128(ktm.x, ktm.y);
+            Log.d("ApplicationClass", "ktm to tm latitude: " +tm128.toLatLng().latitude);
+            Log.d("ApplicationClass", "ktm to tm longtitude: " + tm128.toLatLng().longitude);
+
+            latLngArrayList.add(tm128.toLatLng());
         }
         return latLngArrayList;
     }
