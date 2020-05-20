@@ -16,6 +16,7 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.Projection;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
@@ -110,7 +111,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
-
         //path overlay -> 함수화 예정
         for (int i = 0; i < testlatlng.size(); i++) {
             PathOverlay path = new PathOverlay();

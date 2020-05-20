@@ -2,12 +2,18 @@ package com.shinplest.mobiletermproject;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Log;
 
+import com.jhlabs.map.proj.Projection;
+import com.jhlabs.map.proj.ProjectionFactory;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.Tm128;
 import com.naver.maps.geometry.Utmk;
+
 import com.shinplest.mobiletermproject.parsing.Geometry;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +23,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import kr.hyosang.coordinate.*;
-<<<<<<< HEAD
-=======
 
->>>>>>> upstream/master
 
 public class ApplicationClass extends Application {
 
@@ -50,29 +53,33 @@ public class ApplicationClass extends Application {
     }
 
     public static ArrayList<LatLng> convertTmToLatLng(Geometry geometry) {
+        String[] proj4_w = new String[] {
+                "+proj=tmerc",
+                "+lat_0=38N",
+                "+lon_0=127.00289027777777777776E",
+                "+ellps=grs80",
+                "+units=m",
+                "+x_0=200000",
+                "+y_0=600000",
+                "+k=1.0"
+        };
         double N = 0;
         double E = 0;
         ArrayList<LatLng> latLngArrayList = new ArrayList<>();
 
         ArrayList<ArrayList<Double>> path = geometry.getPath().get(0);
-        Log.d("ApplicationClass", "path size: " + path.size());
 
+                //EPSG:5181
         for (int i = 0; i < path.size(); i++) {
 
             E = path.get(i).get(0);
             N = path.get(i).get(1);
             //파싱한 기존 데이터
+
             Log.d("ApplicationClass", "latitude: " + E);
             Log.d("ApplicationClass", "longtitude: " + N);
 
             //희진님dl 찾은 라이브러리로 좌표계 별 변환하는 코드
-            CoordPoint pt = new CoordPoint(E, N);
-            CoordPoint ktm = TransCoord.getTransCoord(pt, TransCoord.COORD_TYPE_TM, TransCoord.COORD_TYPE_KTM);
-            Tm128 tm128 = new Tm128(ktm.x, ktm.y);
-            Log.d("ApplicationClass", "ktm to tm latitude: " +tm128.toLatLng().latitude);
-            Log.d("ApplicationClass", "ktm to tm longtitude: " + tm128.toLatLng().longitude);
-
-            latLngArrayList.add(tm128.toLatLng());
         }
         return latLngArrayList;
     }
