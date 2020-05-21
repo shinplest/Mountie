@@ -2,6 +2,7 @@ package com.shinplest.mobiletermproject.map;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,21 +18,26 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.PathOverlay;
+import com.naver.maps.map.overlay.PolylineOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
-import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
+import com.shinplest.mobiletermproject.map.models.data.Feature;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
+    private final String TAG = MapFragmentMain.class.getSimpleName();
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
+    ArrayList<ArrayList<LatLng>> allPaths;
 
     private ArrayList<Feature> mFeature = null;
 
@@ -42,8 +48,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //test
-        MapModel mapModel = new MapModel(this);
-        mapModel.getPathData();
+        MapService mapService = new MapService(this);
+        mapService.getPathData();
     }
 
     @Override
@@ -98,7 +104,15 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
         //길 그려주는 부분
         if (mFeature != null) {
-            makeCoodList();
+            Log.d(TAG, "all path size" + allPaths.size());
+            Log.d(TAG, "all path size" + allPaths.get(1));
+
+            ArrayList<List<LatLng>> testlatlng = new ArrayList<>();
+            testlatlng.add(allPaths.get(0));
+            PathOverlay path = new PathOverlay();
+            path.setCoords(testlatlng.get(0));
+            path.setMap(naverMap);
+
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
@@ -108,6 +122,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public void getPathdataSuccess(PathResponse pathResponse) {
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
         showCustomToast(getString(R.string.map_success_message));
+        makeCoodList();
     }
 
     @Override
@@ -116,15 +131,15 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     }
 
     private void makeCoodList() {
-        List<List<LatLng>> allpath = new ArrayList<>();
+        allPaths = new ArrayList<>();
         for (int i = 0; i < mFeature.size(); i++) {
-            List<LatLng> latlngs = new ArrayList<>();
+            ArrayList<LatLng> latlngs = new ArrayList<>();
             List<List<List<Double>>> coordinates = mFeature.get(i).getGeometry().getCoordinates();
-            for (int j = 0; j < coordinates.size(); j++) {
+            for (int j = 0; j < coordinates.get(0).size(); j++) {
                 //위도 경도 추가
                 latlngs.add(new LatLng(coordinates.get(0).get(i).get(1), coordinates.get(0).get(i).get(0)));
             }
-            allpath.add(latlngs);
+            allPaths.add(latlngs);
         }
     }
 }

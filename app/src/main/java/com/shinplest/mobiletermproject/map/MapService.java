@@ -12,12 +12,12 @@ import retrofit2.Response;
 
 import static com.shinplest.mobiletermproject.ApplicationClass.getRetrofit;
 
-public class MapModel {
+public class MapService {
     private final MapFragmentView mMapFragmentView;
     private final PathRetrofitInterface mPathRetrofitInterface = getRetrofit().create(PathRetrofitInterface.class);
-    private final String TAG = MapModel.class.getSimpleName();
+    private final String TAG = MapService.class.getSimpleName();
 
-    public MapModel(MapFragmentView mMapFragmentView) {
+    public MapService(MapFragmentView mMapFragmentView) {
         this.mMapFragmentView = mMapFragmentView;
     }
 
@@ -33,7 +33,7 @@ public class MapModel {
 
             @Override
             public void onFailure(Call<PathResponse> call, Throwable t) {
-                Log.d("test", "fail");
+                Log.d("TAG", "api 통신 상태 문제 있음, 오류 검토");
             }
         });
     }
