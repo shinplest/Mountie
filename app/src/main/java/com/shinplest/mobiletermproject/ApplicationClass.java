@@ -2,18 +2,10 @@ package com.shinplest.mobiletermproject;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.graphics.Point;
-import android.graphics.PointF;
 import android.util.Log;
 
-import com.jhlabs.map.proj.Projection;
-import com.jhlabs.map.proj.ProjectionFactory;
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.geometry.Tm128;
-import com.naver.maps.geometry.Utmk;
-
 import com.shinplest.mobiletermproject.parsing.Geometry;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +14,12 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import kr.hyosang.coordinate.*;
 
 
 public class ApplicationClass extends Application {
 
     // 테스트 서버 주소
-    public static String BASE_URL = "http://apis.newvement.com/";
+    public static String BASE_URL = "http://api.vworld.kr/req/";
     public static SharedPreferences sSharedPreferences = null;
     // SharedPreferences 키 값
     public static String TAG = "Mountie";
@@ -53,7 +44,7 @@ public class ApplicationClass extends Application {
     }
 
     public static ArrayList<LatLng> convertTmToLatLng(Geometry geometry) {
-        String[] proj4_w = new String[] {
+        String[] proj4_w = new String[]{
                 "+proj=tmerc",
                 "+lat_0=38N",
                 "+lon_0=127.00289027777777777776E",
@@ -69,7 +60,7 @@ public class ApplicationClass extends Application {
 
         ArrayList<ArrayList<Double>> path = geometry.getPath().get(0);
 
-                //EPSG:5181
+        //EPSG:5181
         for (int i = 0; i < path.size(); i++) {
 
             E = path.get(i).get(0);

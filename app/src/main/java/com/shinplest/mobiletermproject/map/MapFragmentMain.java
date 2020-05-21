@@ -16,12 +16,13 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.Projection;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
+import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.parsing.Attributes;
 import com.shinplest.mobiletermproject.parsing.Course;
 import com.shinplest.mobiletermproject.parsing.Geometry;
@@ -37,7 +38,7 @@ import static com.shinplest.mobiletermproject.ApplicationClass.convertTmToLatLng
 import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
 
 
-public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
+public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
@@ -57,6 +58,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         for (int i = 0; i < mCourse.size(); i++) {
             testlatlng.add(convertTmToLatLng(mCourse.get(i).getGeometry()));
         }
+
+        //test
+        MapService mapService = new MapService(this);
+        mapService.getPathData();
 
         mContext = this;
     }
@@ -114,8 +119,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         //path overlay -> 함수화 예정
         for (int i = 0; i < testlatlng.size(); i++) {
             PathOverlay path = new PathOverlay();
-            path.setCoords(testlatlng.get(i));
-            path.setMap(naverMap);
+            //   path.setCoords(testlatlng.get(i));
+            //path.setMap(naverMap);
         }
     }
 
@@ -148,4 +153,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         return courses;
     }
 
+    @Override
+    public void getPathdataSuccess(PathResponse pathResponse) {
+
+    }
 }
