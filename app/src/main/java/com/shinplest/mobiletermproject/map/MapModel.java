@@ -12,11 +12,12 @@ import retrofit2.Response;
 
 import static com.shinplest.mobiletermproject.ApplicationClass.getRetrofit;
 
-public class MapService {
+public class MapModel {
     private final MapFragmentView mMapFragmentView;
     private final PathRetrofitInterface mPathRetrofitInterface = getRetrofit().create(PathRetrofitInterface.class);
+    private final String TAG = MapModel.class.getSimpleName();
 
-    public MapService(MapFragmentView mMapFragmentView) {
+    public MapModel(MapFragmentView mMapFragmentView) {
         this.mMapFragmentView = mMapFragmentView;
     }
 
@@ -26,13 +27,13 @@ public class MapService {
             @Override
             public void onResponse(Call<PathResponse> call, Response<PathResponse> response) {
                 final PathResponse pathResponse = response.body();
-                Log.d("test",pathResponse.getResponse().getStatus());
+                Log.d(TAG, "api 통신 상태 " + pathResponse.getResponse().getStatus());
                 mMapFragmentView.getPathdataSuccess(pathResponse);
             }
 
             @Override
             public void onFailure(Call<PathResponse> call, Throwable t) {
-                Log.d("test","fail");
+                Log.d("test", "fail");
             }
         });
     }

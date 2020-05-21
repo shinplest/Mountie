@@ -1,7 +1,8 @@
 
-package com.shinplest.mobiletermproject.map.models;
+package com.shinplest.mobiletermproject.map.models.data;
 
 import com.google.gson.annotations.SerializedName;
+import com.shinplest.mobiletermproject.map.models.data.FeatureCollection;
 
 @SuppressWarnings("unused")
 public class Result {

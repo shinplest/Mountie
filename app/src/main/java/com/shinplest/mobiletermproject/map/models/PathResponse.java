@@ -2,6 +2,10 @@
 package com.shinplest.mobiletermproject.map.models;
 
 import com.google.gson.annotations.SerializedName;
+import com.shinplest.mobiletermproject.map.models.data.Page;
+import com.shinplest.mobiletermproject.map.models.data.Record;
+import com.shinplest.mobiletermproject.map.models.data.Result;
+import com.shinplest.mobiletermproject.map.models.data.Service;
 
 @SuppressWarnings("unused")
 public class PathResponse {

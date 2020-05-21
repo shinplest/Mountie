@@ -2,10 +2,8 @@ package com.shinplest.mobiletermproject;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.naver.maps.geometry.LatLng;
-import com.shinplest.mobiletermproject.parsing.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,37 +40,4 @@ public class ApplicationClass extends Application {
         }
         return retrofit;
     }
-
-    public static ArrayList<LatLng> convertTmToLatLng(Geometry geometry) {
-        String[] proj4_w = new String[]{
-                "+proj=tmerc",
-                "+lat_0=38N",
-                "+lon_0=127.00289027777777777776E",
-                "+ellps=grs80",
-                "+units=m",
-                "+x_0=200000",
-                "+y_0=600000",
-                "+k=1.0"
-        };
-        double N = 0;
-        double E = 0;
-        ArrayList<LatLng> latLngArrayList = new ArrayList<>();
-
-        ArrayList<ArrayList<Double>> path = geometry.getPath().get(0);
-
-        //EPSG:5181
-        for (int i = 0; i < path.size(); i++) {
-
-            E = path.get(i).get(0);
-            N = path.get(i).get(1);
-            //파싱한 기존 데이터
-
-            Log.d("ApplicationClass", "latitude: " + E);
-            Log.d("ApplicationClass", "longtitude: " + N);
-
-            //희진님dl 찾은 라이브러리로 좌표계 별 변환하는 코드
-        }
-        return latLngArrayList;
-    }
-
 }

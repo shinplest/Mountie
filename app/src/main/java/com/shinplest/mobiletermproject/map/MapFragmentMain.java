@@ -2,7 +2,6 @@ package com.shinplest.mobiletermproject.map;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,44 +11,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.gson.Gson;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
-import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
+import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
-import com.shinplest.mobiletermproject.parsing.Attributes;
-import com.shinplest.mobiletermproject.parsing.Course;
-import com.shinplest.mobiletermproject.parsing.Geometry;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-
-import static com.shinplest.mobiletermproject.ApplicationClass.convertTmToLatLng;
-import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
+import java.util.List;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
-    private ArrayList<Course> mCourse;
 
-    public static MapFragmentMain mContext;
-
-    LatLng test;
+    private ArrayList<Feature> mFeature = null;
 
     public MapFragmentMain() {
     }
@@ -57,18 +41,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //최초 실행시 저장한 모든 산의 리스트를 파싱해서 맵 위에 그려준다.
-        //모든 산을 하지 않을것이기 때문에 오버헤드가 크지 않을것으로 판단됨 -> 하지만 해봐야 암..^^
-        mCourse = getCourseList("구룡산.json");
-        for (int i = 0; i < mCourse.size(); i++) {
-            testlatlng.add(convertTmToLatLng(mCourse.get(i).getGeometry()));
-        }
-
         //test
-        MapService mapService = new MapService(this);
-        mapService.getPathData();
-
-        mContext = this;
+        MapModel mapModel = new MapModel(this);
+        mapModel.getPathData();
     }
 
     @Override
@@ -96,8 +71,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             fm.beginTransaction().add(R.id.map, mapFragment).commit();
         }
 
-        locationSource =
-                new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         mapFragment.getMapAsync(this);
 
@@ -121,59 +95,36 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
-        //path overlay -> 함수화 예정
-        for (int i = 0; i < testlatlng.size(); i++) {
-            PathOverlay path = new PathOverlay();
-            //   path.setCoords(testlatlng.get(i));
-            //path.setMap(naverMap);
+
+        //길 그려주는 부분
+        if (mFeature != null) {
+            makeCoodList();
+        } else {
+            showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
-
-        Marker marker = new Marker();
-        marker.setPosition(test);
-        //marker.setPosition(new LatLng(37.5670135, 126.9783740));
-
-        marker.setMap(naverMap);
-    }
-
-
-    public ArrayList<Course> getCourseList(String fileName) {
-        ArrayList<Course> courses = new ArrayList<>();
-        Gson gson = new Gson();
-        try {
-            InputStream is = getActivity().getAssets().open(fileName);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-            String json = new String(buffer, StandardCharsets.UTF_8);
-
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray features = jsonObject.getJSONArray("features");
-
-            for (int i = 0; i < features.length(); i++) {
-                JSONObject courseJs = features.getJSONObject(i);
-                JSONObject attrJs = courseJs.getJSONObject("attributes");
-                JSONObject geoJs = courseJs.getJSONObject("geometry");
-                Attributes course_attr = gson.fromJson(attrJs.toString(), Attributes.class);
-                Geometry paths = gson.fromJson(geoJs.toString(), Geometry.class);
-                Course course = new Course(course_attr, paths);
-                courses.add(course);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return courses;
     }
 
     @Override
     public void getPathdataSuccess(PathResponse pathResponse) {
-        double lat = pathResponse.getResponse().getResult().getFeatureCollection().getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).get(0);
-        double lag = pathResponse.getResponse().getResult().getFeatureCollection().getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).get(1);
-        test = new LatLng(pathResponse.getResponse().getResult().getFeatureCollection().getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).get(1), pathResponse.getResponse().getResult().getFeatureCollection().getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).get(0));
-        Log.d("test", lat + " " + lag);
-        Marker marker = new Marker();
-        //marker.setPosition(test);
-        marker.setPosition(new LatLng(37.5670135, 126.9783740));
+        mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
+        showCustomToast(getString(R.string.map_success_message));
+    }
 
-        marker.setMap(naverMap);
+    @Override
+    public void getPathdataFailure() {
+        showCustomToast(getString(R.string.map_failure_message));
+    }
+
+    private void makeCoodList() {
+        List<List<LatLng>> allpath = new ArrayList<>();
+        for (int i = 0; i < mFeature.size(); i++) {
+            List<LatLng> latlngs = new ArrayList<>();
+            List<List<List<Double>>> coordinates = mFeature.get(i).getGeometry().getCoordinates();
+            for (int j = 0; j < coordinates.size(); j++) {
+                //위도 경도 추가
+                latlngs.add(new LatLng(coordinates.get(0).get(i).get(1), coordinates.get(0).get(i).get(0)));
+            }
+            allpath.add(latlngs);
+        }
     }
 }
