@@ -1,4 +1,4 @@
-package com.shinplest.mobiletermproject.map;
+package com.shinplest.mobiletermproject.search;
 
 import android.os.Bundle;
 import android.text.Editable;

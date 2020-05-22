@@ -26,6 +26,7 @@ import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
+import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
 import java.util.ArrayList;
 

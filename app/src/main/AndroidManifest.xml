@@ -30,7 +30,7 @@
         </activity>
         <activity android:name=".main.MainActivity" />
         <activity android:name=".record.RecordAdapter" />
-        <activity android:name=".map.SearchMainActivity" />
+        <activity android:name=".search.SearchMainActivity" />
     </application>
 
 </manifest>

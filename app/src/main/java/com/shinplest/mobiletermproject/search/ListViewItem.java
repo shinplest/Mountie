@@ -1,4 +1,4 @@
-package com.shinplest.mobiletermproject.map;
+package com.shinplest.mobiletermproject.search;
 
 
 public class ListViewItem {
