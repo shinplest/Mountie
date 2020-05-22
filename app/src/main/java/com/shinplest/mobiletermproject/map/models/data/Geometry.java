@@ -3,21 +3,22 @@ package com.shinplest.mobiletermproject.map.models.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
 public class Geometry {
 
     @SerializedName("coordinates")
-    private List<List<List<Double>>> mCoordinates;
+    private ArrayList<ArrayList<ArrayList<Double>>> mCoordinates;
     @SerializedName("type")
     private String mType;
 
-    public List<List<List<Double>>> getCoordinates() {
+    public ArrayList<ArrayList<ArrayList<Double>>> getCoordinates() {
         return mCoordinates;
     }
 
-    public void setCoordinates(List<List<List<Double>>> coordinates) {
+    public void setCoordinates(ArrayList<ArrayList<ArrayList<Double>>> coordinates) {
         mCoordinates = coordinates;
     }
 
