@@ -37,7 +37,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
-    ArrayList<ArrayList<LatLng>> allPaths;
+    private ArrayList<ArrayList<LatLng>> allPaths;
 
     private ArrayList<Feature> mFeature = null;
 
@@ -47,9 +47,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //test
+        //시작시에 통신 시작 및 경로 가져옴
         MapService mapService = new MapService(this);
-        mapService.getPathData();
+        mapService.getPathData("127.057", "37.47", "127.06", "37.5");
     }
 
     @Override
@@ -111,6 +111,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 PathOverlay path = new PathOverlay();
                 path.setCoords(allPaths.get(i));
                 path.setWidth(30);
+                //첫 3개만 테스트로 색을 바꿔줘봤어요.
                 switch (i) {
                     case 0:
                         path.setColor(Color.BLUE);
