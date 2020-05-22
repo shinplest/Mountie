@@ -36,7 +36,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
-    private NaverMap naverMap;
+    private NaverMap mNaverMap;
     private ArrayList<ArrayList<LatLng>> allPaths;
 
     private ArrayList<Feature> mFeature = null;
@@ -47,9 +47,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //시작시에 통신 시작 및 경로 가져옴
-        MapService mapService = new MapService(this);
-        mapService.getPathData("127.057", "37.47", "127.06", "37.5");
     }
 
     @Override
@@ -57,7 +54,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         if (locationSource.onRequestPermissionsResult(
                 requestCode, permissions, grantResults)) {
             if (!locationSource.isActivated()) { // 권한 거부됨
-                naverMap.setLocationTrackingMode(LocationTrackingMode.None);
+                mNaverMap.setLocationTrackingMode(LocationTrackingMode.None);
             }
             return;
         }
@@ -95,12 +92,24 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
-        this.naverMap = naverMap;
+        mNaverMap = naverMap;
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
+
+        //통신 시작 및 경로 가져옴
+        MapService mapService = new MapService(this);
+        mapService.getPathData("127.05", "37.4", "127.06", "37.5");
+
+    }
+
+    @Override
+    public void getPathdataSuccess(PathResponse pathResponse) {
+        mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
+        showCustomToast(getString(R.string.map_success_message));
+        makeCoodList();
 
         //길 그려주는 부분
         if (allPaths != null) {
@@ -125,18 +134,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 }
                 path.setPassedColor(Color.GRAY);
                 path.setOutlineWidth(5);
-                path.setMap(naverMap);
+                path.setMap(mNaverMap);
             }
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
-    }
-
-    @Override
-    public void getPathdataSuccess(PathResponse pathResponse) {
-        mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
-        showCustomToast(getString(R.string.map_success_message));
-        makeCoodList();
     }
 
     @Override
