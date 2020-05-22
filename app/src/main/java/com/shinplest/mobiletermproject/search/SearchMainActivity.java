@@ -1,4 +1,4 @@
-package com.shinplest.mobiletermproject.map;
+package com.shinplest.mobiletermproject.search;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,16 +8,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.shinplest.mobiletermproject.BaseActivity;
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.parsing.Attributes;
-import com.shinplest.mobiletermproject.parsing.Course;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchMainActivity extends AppCompatActivity {
+public class SearchMainActivity extends BaseActivity {
 
     private List<String> list;
     private ListView listView;
@@ -26,7 +24,6 @@ public class SearchMainActivity extends AppCompatActivity {
     private ArrayList<String> arrayList;
 
     String name;
-    ArrayList<Course> cors;
 
     String tag = "check";
     @Override
@@ -34,15 +31,13 @@ public class SearchMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_main);
 
-        editSearch = (EditText) findViewById(R.id.editSearch);
-        listView = (ListView) findViewById(R.id.listView);
+        editSearch =  findViewById(R.id.editSearch);
+        listView =  findViewById(R.id.listView);
 
-        list = new ArrayList<String>();
+        list = new ArrayList<>();
         adapter = new SearchAdapter(list,this);
         listView.setAdapter(adapter);
-
-        settingList();
-        arrayList = new ArrayList<String>();
+        arrayList = new ArrayList<>();
         arrayList.addAll(list);
 
         editSearch.addTextChangedListener(new TextWatcher() {
@@ -94,19 +89,4 @@ public class SearchMainActivity extends AppCompatActivity {
         }
         adapter.notifyDataSetChanged();
     }
-    private void settingList()
-    {
-        //일단은 구룡산만 넣어두기
-        cors = ((MapFragmentMain)MapFragmentMain.mContext).getCourseList("구룡산.json");
-        Attributes att = cors.get(0).getAttributes();
-        name = att.getMNTN_NM();
-
-        list.add(name);
-        adapter.addData(name);
-        list.add("이건테스트");
-        adapter.addData("이건테스트");
-        list.add("ㅎㅎ");
-        adapter.addData("ㅎㅎ");
-    }
-
 }

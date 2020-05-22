@@ -1,7 +1,9 @@
 package com.shinplest.mobiletermproject.map;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,39 +13,33 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.gson.Gson;
+import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.Projection;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.parsing.Attributes;
-import com.shinplest.mobiletermproject.parsing.Course;
-import com.shinplest.mobiletermproject.parsing.Geometry;
+import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
+import com.shinplest.mobiletermproject.map.models.PathResponse;
+import com.shinplest.mobiletermproject.map.models.data.Feature;
+import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static com.shinplest.mobiletermproject.ApplicationClass.convertTmToLatLng;
-import static com.shinplest.mobiletermproject.ApplicationClass.testlatlng;
 
+public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
+    private final String TAG = MapFragmentMain.class.getSimpleName();
 
-public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
-    private NaverMap naverMap;
-    private ArrayList<Course> mCourse;
+    private NaverMap mNaverMap;
+    private ArrayList<ArrayList<LatLng>> allPaths;
 
-    public static MapFragmentMain mContext;
+    private ArrayList<Feature> mFeature = null;
 
     public MapFragmentMain() {
     }
@@ -51,14 +47,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //최초 실행시 저장한 모든 산의 리스트를 파싱해서 맵 위에 그려준다.
-        //모든 산을 하지 않을것이기 때문에 오버헤드가 크지 않을것으로 판단됨 -> 하지만 해봐야 암..^^
-        mCourse = getCourseList("구룡산.json");
-        for (int i = 0; i < mCourse.size(); i++) {
-            testlatlng.add(convertTmToLatLng(mCourse.get(i).getGeometry()));
-        }
-
-        mContext = this;
     }
 
     @Override
@@ -66,7 +54,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
         if (locationSource.onRequestPermissionsResult(
                 requestCode, permissions, grantResults)) {
             if (!locationSource.isActivated()) { // 권한 거부됨
-                naverMap.setLocationTrackingMode(LocationTrackingMode.None);
+                mNaverMap.setLocationTrackingMode(LocationTrackingMode.None);
             }
             return;
         }
@@ -86,8 +74,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
             fm.beginTransaction().add(R.id.map, mapFragment).commit();
         }
 
-        locationSource =
-                new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         mapFragment.getMapAsync(this);
 
@@ -105,47 +92,70 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback 
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
-        this.naverMap = naverMap;
+        mNaverMap = naverMap;
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
-        //path overlay -> 함수화 예정
-        for (int i = 0; i < testlatlng.size(); i++) {
-            PathOverlay path = new PathOverlay();
-            path.setCoords(testlatlng.get(i));
-            path.setMap(naverMap);
-        }
+
+        //통신 시작 및 경로 가져옴
+        MapService mapService = new MapService(this);
+        mapService.getPathData("127.05", "37.4", "127.06", "37.5");
+
     }
 
+    @Override
+    public void getPathdataSuccess(PathResponse pathResponse) {
+        mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
+        showCustomToast(getString(R.string.map_success_message));
+        makeCoodList();
 
-    public ArrayList<Course> getCourseList(String fileName) {
-        ArrayList<Course> courses = new ArrayList<>();
-        Gson gson = new Gson();
-        try {
-            InputStream is = getActivity().getAssets().open(fileName);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-            String json = new String(buffer, StandardCharsets.UTF_8);
+        //길 그려주는 부분
+        if (allPaths != null) {
+            Log.d(TAG, "all path size" + allPaths.size());
+            Log.d(TAG, "all path size" + allPaths.get(1));
 
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray features = jsonObject.getJSONArray("features");
-
-            for (int i = 0; i < features.length(); i++) {
-                JSONObject courseJs = features.getJSONObject(i);
-                JSONObject attrJs = courseJs.getJSONObject("attributes");
-                JSONObject geoJs = courseJs.getJSONObject("geometry");
-                Attributes course_attr = gson.fromJson(attrJs.toString(), Attributes.class);
-                Geometry paths = gson.fromJson(geoJs.toString(), Geometry.class);
-                Course course = new Course(course_attr, paths);
-                courses.add(course);
+            for (int i = 0; i < allPaths.size(); i++) {
+                PathOverlay path = new PathOverlay();
+                path.setCoords(allPaths.get(i));
+                path.setWidth(30);
+                //첫 3개만 테스트로 색을 바꿔줘봤어요.
+                switch (i) {
+                    case 0:
+                        path.setColor(Color.BLUE);
+                        break;
+                    case 1:
+                        path.setColor(Color.GREEN);
+                        break;
+                    case 2:
+                        path.setColor(Color.RED);
+                        break;
+                }
+                path.setPassedColor(Color.GRAY);
+                path.setOutlineWidth(5);
+                path.setMap(mNaverMap);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
-        return courses;
     }
 
+    @Override
+    public void getPathdataFailure() {
+        showCustomToast(getString(R.string.map_failure_message));
+    }
+
+    private void makeCoodList() {
+        allPaths = new ArrayList<>();
+        for (int i = 0; i < mFeature.size(); i++) {
+            ArrayList<LatLng> latlngs = new ArrayList<>();
+            ArrayList<ArrayList<ArrayList<Double>>> coordinates = mFeature.get(i).getGeometry().getCoordinates();
+            for (int j = 0; j < coordinates.get(0).size(); j++) {
+                //위도 경도 추가
+                latlngs.add(new LatLng(coordinates.get(0).get(j).get(1), coordinates.get(0).get(j).get(0)));
+            }
+            allPaths.add(latlngs);
+        }
+    }
 }

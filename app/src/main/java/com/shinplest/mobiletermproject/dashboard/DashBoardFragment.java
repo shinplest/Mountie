@@ -27,7 +27,6 @@ public class DashBoardFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dashboard_fragment, container, false);
-        showCustomToast("이렇게 쉽게 토스트 메세지를 만들수 있게 했습니다. ");
         return view;
     }
 }
