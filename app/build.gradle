@@ -37,21 +37,16 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    // https://github.com/square/retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
-    // https://github.com/square/okhttp
     implementation 'com.squareup.okhttp3:okhttp:4.0.1'
-    // https://github.com/square/retrofit/tree/master/retrofit-converters/gson
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'com.afollestad.material-dialogs:core:3.2.1'
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
     implementation 'com.facebook.fresco:fresco:2.1.0'
-    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.naver.maps:map-sdk:3.8.0'
     implementation 'com.naver.maps.open:naver-map-ncp-api:2.1.7'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation files('libs/TransCoord.jar')
-    implementation files('libs/javaproj-1.0.6.jar')
 }

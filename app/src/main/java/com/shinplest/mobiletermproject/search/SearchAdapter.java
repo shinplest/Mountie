@@ -1,4 +1,4 @@
-package com.shinplest.mobiletermproject.map;
+package com.shinplest.mobiletermproject.search;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.map.MapFragmentMain;
 
 import java.util.ArrayList;
 import java.util.List;
