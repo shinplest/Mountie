@@ -101,7 +101,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
         //통신 시작 및 경로 가져옴
         MapService mapService = new MapService(this);
-        mapService.getPathData("127.05", "37.4", "127.06", "37.5");
+        mapService.getPathData("127.01", "37.2", "127.06", "37.6");
 
     }
 
