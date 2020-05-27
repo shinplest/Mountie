@@ -82,12 +82,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
 
         Button searchBtn = view.findViewById(R.id.editSearchBar);
-        searchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
-                startActivity(intent);
-            }
+        searchBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
+            startActivity(intent);
         });
 
         return view;
@@ -95,17 +92,16 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
+        MapService mapService = new MapService(this);
         mNaverMap = naverMap;
+        //위치가 바뀔때 마다 자동으로 데이터 불러오도록
+        mNaverMap.addOnLocationChangeListener(location -> mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1));
+
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
-
-        //통신 시작 및 경로 가져옴
-        MapService mapService = new MapService(this);
-        mapService.getPathData("127.01", "37.2", "127.06", "37.6");
-
     }
 
 
