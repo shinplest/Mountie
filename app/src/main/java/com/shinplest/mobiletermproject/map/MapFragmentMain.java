@@ -19,6 +19,7 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
@@ -26,6 +27,7 @@ import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
+import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private FusedLocationSource locationSource;
     private NaverMap mNaverMap;
     private ArrayList<ArrayList<LatLng>> allPaths;
+    private ArrayList<Properties> allProperties = null;
 
     private ArrayList<Feature> mFeature = null;
 
@@ -105,6 +108,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     }
 
+
+    //등산로 가져오기 성공했을때
     @Override
     public void getPathdataSuccess(PathResponse pathResponse) {
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
@@ -119,21 +124,16 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             for (int i = 0; i < allPaths.size(); i++) {
                 PathOverlay path = new PathOverlay();
                 path.setCoords(allPaths.get(i));
-                path.setWidth(30);
-                //첫 3개만 테스트로 색을 바꿔줘봤어요.
-                switch (i) {
-                    case 0:
-                        path.setColor(Color.BLUE);
-                        break;
-                    case 1:
-                        path.setColor(Color.GREEN);
-                        break;
-                    case 2:
-                        path.setColor(Color.RED);
-                        break;
-                }
+                path.setWidth(10);
                 path.setPassedColor(Color.GRAY);
                 path.setOutlineWidth(5);
+
+                //중간점에 마커 좌표
+                Marker marker = new Marker();
+                marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
+
+                //마커와 등산로 맵에 표시
+                marker.setMap(mNaverMap);
                 path.setMap(mNaverMap);
             }
         } else {
@@ -148,7 +148,13 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     private void makeCoodList() {
         allPaths = new ArrayList<>();
+        allProperties = new ArrayList<>();
+
         for (int i = 0; i < mFeature.size(); i++) {
+            //프로퍼티 배열 추가
+            allProperties.add(mFeature.get(i).getProperties());
+
+            //길 데이터 추가
             ArrayList<LatLng> latlngs = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<Double>>> coordinates = mFeature.get(i).getGeometry().getCoordinates();
             for (int j = 0; j < coordinates.get(0).size(); j++) {
