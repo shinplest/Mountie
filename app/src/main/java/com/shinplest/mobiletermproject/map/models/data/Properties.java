@@ -6,16 +6,22 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("unused")
 public class Properties {
 
+    //난이도 상,중,하
     @SerializedName("cat_nam")
     private String mCatNam;
+    //하행속도 분
     @SerializedName("down_min")
     private String mDownMin;
+    //종점 표고 m
     @SerializedName("end_z")
     private String mEndZ;
+    //구간거리 m
     @SerializedName("sec_len")
     private String mSecLen;
+    //시점 표고 m
     @SerializedName("start_z")
     private String mStartZ;
+    //상행속도 분
     @SerializedName("up_min")
     private String mUpMin;
 

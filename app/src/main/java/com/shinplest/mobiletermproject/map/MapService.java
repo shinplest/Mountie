@@ -22,7 +22,7 @@ public class MapService {
     }
 
     //범위를 가지고 등산로 가져오는 메소드
-    void getPathData(String x1, String y1, String x2, String y2) {
+    void getPathData(Double x1, Double y1, Double x2, Double y2) {
         Log.d(TAG, "BOX("+ x1 +", "+y1+", " + x2 +", "+ y2 + ")");
         mPathRetrofitInterface.getPathInfo("data", "GetFeature", "LT_L_FRSTCLIMB", "5899463B-A474-3502-AD62-14F8C481A43C",
                 "http://com.shinplest.mobiletermproject", "BOX("+ x1 +", "+y1+", " + x2 +", "+ y2 + ")", 100).enqueue(new Callback<PathResponse>() {
