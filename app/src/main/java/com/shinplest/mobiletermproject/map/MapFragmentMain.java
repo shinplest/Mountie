@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
@@ -43,8 +45,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private NaverMap mNaverMap;
     private ArrayList<ArrayList<LatLng>> allPaths;
     private ArrayList<Properties> allProperties = null;
-
     private ArrayList<Feature> mFeature = null;
+
+    Button startNavi;
+    LinearLayout pathInfoView;
 
     public MapFragmentMain() {
     }
@@ -74,10 +78,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         FragmentManager fm = getChildFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 
-        if (mapFragment == null) {
-            mapFragment = MapFragment.newInstance();
-            fm.beginTransaction().add(R.id.map, mapFragment).commit();
-        }
+//        if (mapFragment == null) {
+//            mapFragment = MapFragment.newInstance();
+//            fm.beginTransaction().add(R.id.map, mapFragment).commit();
+//        }
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
@@ -88,6 +92,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
             startActivity(intent);
         });
+        startNavi = view.findViewById(R.id.start_navi);
+        pathInfoView = view.findViewById(R.id.pathInforView);
 
         return view;
     }
@@ -129,6 +135,20 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 Marker marker = new Marker();
                 marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
 
+                marker.setOnClickListener(new Overlay.OnClickListener() {
+                    @Override
+                    public boolean onClick(@NonNull Overlay overlay) {
+                        showCustomToast("눌림");
+                        pathInfoView.setVisibility(View.VISIBLE);
+                        startNavi.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showCustomToast("네비게이션 시작");
+                            }
+                        });
+                        return true;
+                    }
+                });
                 //마커와 등산로 맵에 표시
                 marker.setMap(mNaverMap);
                 path.setMap(mNaverMap);
