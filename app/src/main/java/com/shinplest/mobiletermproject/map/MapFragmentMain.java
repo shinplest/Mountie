@@ -96,7 +96,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mNaverMap = naverMap;
         //위치가 바뀔때 마다 자동으로 데이터 불러오도록
         mNaverMap.addOnLocationChangeListener(location -> mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1));
-
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
