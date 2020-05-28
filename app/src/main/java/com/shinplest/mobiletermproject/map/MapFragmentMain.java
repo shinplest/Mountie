@@ -2,7 +2,9 @@ package com.shinplest.mobiletermproject.map;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +98,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mNaverMap = naverMap;
         //위치가 바뀔때 마다 자동으로 데이터 불러오도록
         mNaverMap.addOnLocationChangeListener(location -> mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1));
-
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();

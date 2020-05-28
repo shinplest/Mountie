@@ -35,7 +35,7 @@ public class MapService {
 
             @Override
             public void onFailure(Call<PathResponse> call, Throwable t) {
-                Log.d("TAG", "api 통신 상태 문제 있음, 오류 검토");
+                Log.d("TAG", "api 통신 상태 문제 있음, 오류 검토"+t.getMessage());
             }
         });
     }
