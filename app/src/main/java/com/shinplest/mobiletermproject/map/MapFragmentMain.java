@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,9 @@ import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
@@ -124,35 +128,49 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             Log.d(TAG, "all path size" + allPaths.size());
             Log.d(TAG, "all path size" + allPaths.get(1));
 
-            for (int i = 0; i < allPaths.size(); i++) {
-                PathOverlay path = new PathOverlay();
-                path.setCoords(allPaths.get(i));
-                path.setWidth(10);
-                path.setPassedColor(Color.GRAY);
-                path.setOutlineWidth(5);
+            Executor executor = Executors.newFixedThreadPool(50);
+            Handler handler = new Handler(Looper.getMainLooper());
 
-                //중간점에 마커 좌표
-                Marker marker = new Marker();
-                marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
+            executor.execute(()->{
 
-                marker.setOnClickListener(new Overlay.OnClickListener() {
-                    @Override
-                    public boolean onClick(@NonNull Overlay overlay) {
-                        showCustomToast("눌림");
-                        pathInfoView.setVisibility(View.VISIBLE);
-                        startNavi.setOnClickListener(new View.OnClickListener() {
+                List<PathOverlay> paths = new ArrayList<>();
+
+                for (int i = 0; i < allPaths.size(); i++) {
+                    PathOverlay path = new PathOverlay();
+                    path.setCoords(allPaths.get(i));
+                    path.setWidth(10);
+                    path.setPassedColor(Color.GRAY);
+                    path.setOutlineWidth(5);
+                    paths.add(path);
+
+//                    중간점에 마커 좌표
+//                Marker marker = new Marker();
+//                marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
+
+                }
+
+                handler.post(()->{
+                    //마커와 등산로 맵에 표시
+//                marker.setMap(mNaverMap);
+                    for(PathOverlay path : paths){
+                        path.setMap(mNaverMap);
+                        path.setOnClickListener(new Overlay.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
-                                showCustomToast("네비게이션 시작");
+                            public boolean onClick(@NonNull Overlay overlay) {
+                                pathInfoView.setVisibility(View.VISIBLE);
+                                startNavi.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        showCustomToast("네비게이션 시작");
+                                    }
+                                });
+                                return true;
                             }
                         });
-                        return true;
                     }
                 });
-                //마커와 등산로 맵에 표시
-                marker.setMap(mNaverMap);
-                path.setMap(mNaverMap);
-            }
+            });
+
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
