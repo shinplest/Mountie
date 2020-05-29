@@ -190,6 +190,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                                 @Override
                                 public void onClick(View v) {
                                     //본인 location 확인 로직 들어가야함 이후 ok일 때 startnavigation().
+
                                     startNavigation(path,pathOverlays);
                                 }
                             });
@@ -222,6 +223,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     Log.d("navagation start", "camera update canceled");
                 });
         mNaverMap.moveCamera(cameraUpdate);
+
+        //본인 위치 listener받아오면서 주기적으로 자기 위치 업데이트 및 진척률 보여주는 로직 아래 들어갈 예정.
 
     }
 
