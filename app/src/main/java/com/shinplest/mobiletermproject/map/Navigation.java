@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.allPaths;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
-    private PathOverlay pathChosen;
+    private PathOverlay pathOverlay;
+    private ArrayList<LatLng> pathCoords;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +46,20 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 //            }
 //        });
         back.setOnClickListener(v->finish());
-
-        pathChosen = new PathOverlay();
-        pathChosen.setCoords(allPaths.get(index));
-        pathChosen.setWidth(10);
-        pathChosen.setPassedColor(Color.BLUE);
-        pathChosen.setOutlineWidth(2);
+        pathCoords = allPaths.get(index);
+        pathOverlay = new PathOverlay();
+        pathOverlay.setCoords(pathCoords);
+        pathOverlay.setWidth(10);
+        pathOverlay.setPassedColor(Color.BLUE);
+        pathOverlay.setOutlineWidth(2);
 
     }
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
 
-        pathChosen.setMap(naverMap);
-        CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathChosen.getBounds())
+        pathOverlay.setMap(naverMap);
+        CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
                 .animate(CameraAnimation.Fly,1200)
                 .finishCallback(()->{
                     Log.d("navigation start","camera update finished");
@@ -73,7 +74,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
                 LatLng loc = new LatLng(lat,lng);
-
                 Log.d("location class", String.valueOf(location));
             }
         });
