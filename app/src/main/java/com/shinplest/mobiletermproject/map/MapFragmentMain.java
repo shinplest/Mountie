@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,12 +33,15 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.main.MainActivity;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
+import java.lang.reflect.Array;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -51,13 +55,17 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private static final int NUMBER_OF_THREAD = 50;
     private FusedLocationSource locationSource;
     private NaverMap mNaverMap;
-    private ArrayList<ArrayList<LatLng>> allPaths;
-    private ArrayList<Properties> allProperties = null;
+    public static ArrayList<ArrayList<LatLng>> allPaths;
+    public static ArrayList<Properties> allProperties = null;
     private ArrayList<Feature> mFeature = null;
 
     Button startNavi;
     LinearLayout pathInfoView;
     Button searchBtn;
+    TextView mCatNam;
+    TextView mDownMin;
+    TextView mSecLen;
+    TextView mUpMin;
     NaverMap.OnLocationChangeListener locationChangeListener;
 
     public MapFragmentMain() {
@@ -87,6 +95,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         View view = inflater.inflate(R.layout.map_fragment_main, container, false);
         FragmentManager fm = getChildFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+        TextView catNam = view.findViewById(R.id.mCatNam);
 
 //        if (mapFragment == null) {
 //            mapFragment = MapFragment.newInstance();
@@ -104,7 +113,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         });
         startNavi = view.findViewById(R.id.start_navi);
         pathInfoView = view.findViewById(R.id.pathInforView);
-
+        mCatNam = view.findViewById(R.id.mCatNam);
+        mDownMin = view.findViewById(R.id.mDownMin);
+        mSecLen = view.findViewById(R.id.mSecLen);
+        mUpMin = view.findViewById(R.id.mUpMin);
         return view;
     }
 
@@ -180,53 +192,30 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             handler.post(()->{
                 //마커와 등산로 맵에 표시
 //                marker.setMap(mNaverMap);
-                for(PathOverlay path : pathOverlays){
-                    path.setMap(mNaverMap);
-                    path.setOnClickListener(new Overlay.OnClickListener() {
+                for(int i=0;i<pathOverlays.size();i++){
+                    pathOverlays.get(i).setMap(mNaverMap);
+                    pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
                         @Override
                         public boolean onClick(@NonNull Overlay overlay) {
                             pathInfoView.setVisibility(View.VISIBLE);
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    //본인 location 확인 로직 들어가야함 이후 ok일 때 startnavigation().
-
-                                    startNavigation(path,pathOverlays);
+                                    //이전에 본인 location 확인 로직 들어가야함
+                                    Intent intent = new Intent(getActivity(),Navigation.class);
+                                    intent.putExtra("pathIndex",pathOverlays.indexOf(overlay));
+                                    startActivity(intent);
                                 }
                             });
                             return true;
                         }
                     });
-
                 }
             });
         });
 
     }
 
-    private void startNavigation(PathOverlay pathChosen,List<PathOverlay> pathOverlays){
-        searchBtn.setVisibility(View.INVISIBLE);
-        pathInfoView.setVisibility(View.INVISIBLE);
-        mNaverMap.removeOnLocationChangeListener(locationChangeListener);
-        showCustomToast("네비게이션 시작");
-        for(PathOverlay path : pathOverlays){
-            if(!path.getCoords().equals(pathChosen.getCoords())) path.setMap(null);
-            else path.setMap(mNaverMap);
-        }
-
-        CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathChosen.getBounds())
-                .animate(CameraAnimation.Fly,1200)
-                .finishCallback(()->{
-                    Log.d("navigation start","camera update finished");
-                })
-                .cancelCallback(()->{
-                    Log.d("navagation start", "camera update canceled");
-                });
-        mNaverMap.moveCamera(cameraUpdate);
-
-        //본인 위치 listener받아오면서 주기적으로 자기 위치 업데이트 및 진척률 보여주는 로직 아래 들어갈 예정.
-
-    }
 
     private List<PathOverlay> getPathsOverLayList(){
         List<PathOverlay> paths = new ArrayList<>();
@@ -237,7 +226,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             path.setPassedColor(Color.GRAY);
             path.setOutlineWidth(5);
             paths.add(path);
-
 //                    중간점에 마커 좌표
 //                Marker marker = new Marker();
 //                marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
