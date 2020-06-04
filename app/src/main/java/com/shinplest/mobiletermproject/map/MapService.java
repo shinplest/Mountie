@@ -29,11 +29,12 @@ public class MapService {
             @Override
             public void onResponse(Call<PathResponse> call, Response<PathResponse> response) {
                 final PathResponse pathResponse = response.body();
-                Log.d(TAG, "api 통신 상태 " + pathResponse.getResponse().getStatus());
-                if (pathResponse.getResponse().getResult() != null)
-                    mMapFragmentView.getPathdataSuccess(pathResponse);
-                else {
-                    Log.d(TAG, "반경 내 등산로가 없음");
+                if(pathResponse != null){
+                    if (pathResponse.getResponse().getResult() != null)
+                        mMapFragmentView.getPathdataSuccess(pathResponse);
+                    else {
+                        Log.d(TAG, "반경 내 등산로가 없음");
+                    }
                 }
             }
 
