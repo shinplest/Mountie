@@ -19,29 +19,22 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.CameraAnimation;
-import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
-import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.Overlay;
-import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.main.MainActivity;
 import com.shinplest.mobiletermproject.map.interfaces.MapFragmentView;
 import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
-import java.lang.reflect.Array;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -111,6 +104,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
             startActivity(intent);
         });
+
         startNavi = view.findViewById(R.id.start_navi);
         pathInfoView = view.findViewById(R.id.pathInforView);
         mCatNam = view.findViewById(R.id.mCatNam);
@@ -131,6 +125,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1);
             }
         };
+
        mNaverMap.addOnLocationChangeListener(locationChangeListener);
 //        mNaverMap.addOnLocationChangeListener(location -> mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1));
         naverMap.setLocationSource(locationSource);
@@ -233,4 +228,5 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
         return paths;
     }
+
 }
