@@ -3,6 +3,8 @@ package com.shinplest.mobiletermproject;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.naver.maps.geometry.LatLng;
 
 import java.util.ArrayList;
@@ -26,6 +28,10 @@ public class ApplicationClass extends Application {
 
     public static ArrayList<List<LatLng>> testlatlng = new ArrayList<>();
 
+    public static Gson gson = new GsonBuilder()
+            .setLenient()
+            .create();
+
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
@@ -35,7 +41,7 @@ public class ApplicationClass extends Application {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;
