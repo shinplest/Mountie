@@ -35,6 +35,7 @@ import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -192,6 +193,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
                         @Override
                         public boolean onClick(@NonNull Overlay overlay) {
+                            ((PathOverlay) overlay).setColor(Color.BLUE);
                             pathInfoView.setVisibility(View.VISIBLE);
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -218,7 +220,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             PathOverlay path = new PathOverlay();
             path.setCoords(allPaths.get(i));
             path.setWidth(10);
-            path.setPassedColor(Color.GRAY);
             path.setOutlineWidth(5);
             paths.add(path);
 //                    중간점에 마커 좌표
