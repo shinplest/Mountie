@@ -1,5 +1,6 @@
 package com.shinplest.mobiletermproject.map;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -35,7 +36,6 @@ import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -103,7 +103,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         searchBtn = view.findViewById(R.id.editSearchBar);
         searchBtn.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
-            startActivity(intent);
+            super.onActivityResult(1,1,intent);
+            startActivityForResult(intent,1);
         });
 
         startNavi = view.findViewById(R.id.start_navi);
@@ -113,6 +114,24 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mSecLen = view.findViewById(R.id.mSecLen);
         mUpMin = view.findViewById(R.id.mUpMin);
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Bundle bundle = data.getBundleExtra("bundle");
+        if(resultCode == Activity.RESULT_OK)
+        {
+            if(requestCode == 1)
+            {
+                String name = bundle.getString("mountainName");
+                Double x1 = bundle.getDouble("x1");
+                Double y1 = bundle.getDouble("y1");
+                showCustomToast(name + " " + x1 + " " + y1);
+            }
+        }
     }
 
     @Override
@@ -229,5 +248,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
         return paths;
     }
+
 
 }
