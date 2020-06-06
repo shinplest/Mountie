@@ -89,7 +89,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getBitmapFromView(navigationView);
+                Bitmap bitmap = getBitmapFromView(navigationView);
             }
         });
     }
