@@ -1,6 +1,7 @@
 package com.shinplest.mobiletermproject.search;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.map.MapFragmentMain;
 
 import java.util.ArrayList;
 
@@ -51,18 +51,17 @@ public class SearchMainActivity extends AppCompatActivity implements TextWatcher
             @Override
             public void onItemClick(String value, Double x1, Double y1, Double x2, Double y2) {
 
-                MapFragmentMain mapFragmentMain = new MapFragmentMain();
-
                 Bundle bundle = new Bundle();
                 bundle.putString("mountainName",value);
                 bundle.putDouble("x1",x1);
                 bundle.putDouble("y1",y1);
                 bundle.putDouble("x2",x2);
                 bundle.putDouble("y2",y2);
-                mapFragmentMain.setArguments(bundle);
 
-                //여기서 mapFragmentMain 띄우기
-
+                Intent intent = new Intent();
+                intent.putExtra("bundle",bundle);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
 
