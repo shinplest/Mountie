@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.os.health.PackageHealthStats;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.naver.maps.geometry.LatLng;
@@ -80,6 +83,15 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         pathOverlay.setPassedColor(Color.BLUE);
         pathOverlay.setOutlineWidth(2);
 
+        //이쪽에다 캡쳐 버튼 생성과 스토리지 저장 구현
+        Button record = findViewById(R.id.record);
+        FrameLayout navigationView = findViewById(R.id.navigation);
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getBitmapFromView(navigationView);
+            }
+        });
     }
 
     @Override
@@ -139,5 +151,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 Log.d("location class", String.valueOf(location));
             }
         });
+    }
+
+    //현재 화면을 비트맵으로 캡쳐
+    public Bitmap getBitmapFromView(View view){
+        Bitmap bitmap =Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
     }
 }
