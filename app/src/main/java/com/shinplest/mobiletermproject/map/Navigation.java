@@ -20,6 +20,7 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.Projection;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
@@ -66,12 +67,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
 
         Button back = findViewById(R.id.backToMap);
-//        back.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
         back.setOnClickListener(v->finish());
         pathCoords = allPaths.get(index);
         pathOverlay = new PathOverlay();
@@ -86,39 +81,55 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
 
-        List<LatLng> passed = new ArrayList<>();
-        List<LatLng> goingTo;
-
         naverMap.setLocationSource(locationSource);
         pathOverlay.setMap(naverMap);
         pathOverlay.setProgress(0);
         pathOverlay.setColor(Color.BLUE);
         pathOverlay.setPassedColor(Color.GRAY);
         LocationOverlay locationOverlay = naverMap.getLocationOverlay();
-        locationOverlay.setPosition(pathCoords.get(0));
+        locationOverlay.setPosition(pathCoords.get(20));
         locationOverlay.setVisible(true);
-//
-//        PathOverlay passedOverLay = new PathOverlay();
-//        PathOverlay goingToOverLay = new PathOverlay();
-//        passedOverLay.setColor(Color.GRAY);
-//        goingToOverLay.setColor(Color.BLUE);
-//
-//
-//        passed.add(naverMap.getLocationOverlay().getPosition());
-//        passed.add(naverMap.getLocationOverlay().getPosition());
-//        goingTo = pathCoords;
-//        for(int i=0;i<pathCoords.size();i++){
-//            if(pathCoords.get(i).latitude<=naverMap.getLocationOverlay().getPosition().latitude||pathCoords.get(i).longitude<=naverMap.getLocationOverlay().getPosition().longitude){
-//                goingTo.remove(i);
-//            }
-//        }
-//
-//
-//        passedOverLay.setCoords(passed);
-//        goingToOverLay.setCoords(goingTo);
-//
-//        passedOverLay.setMap(naverMap);
-//        goingToOverLay.setMap(naverMap);
+
+        PathOverlay passedOverLay = new PathOverlay();
+        PathOverlay goingToOverLay = new PathOverlay();
+        passedOverLay.setColor(Color.GRAY);
+        goingToOverLay.setColor(Color.BLUE);
+
+        //////////////////////////////////
+        //// test용 코드////
+        List<LatLng> passed = new ArrayList<>();
+        List<LatLng> goingTo = new ArrayList<>();
+
+        double lat = naverMap.getLocationOverlay().getPosition().latitude;
+        double lng = naverMap.getLocationOverlay().getPosition().longitude;
+        LatLng currentPos = new LatLng(lat,lng);
+        double distance =10000;
+        int closestIdx=0;
+
+        for(int i=0;i<pathCoords.size();i++){
+            Double lng_on_path = pathCoords.get(i).longitude;
+            Double lat_on_path = pathCoords.get(i).latitude;
+            double tmp = distance_Between_LatLong(lat_on_path,lng_on_path, lat,lng);
+            if(distance > tmp) {
+                distance = tmp;
+                closestIdx = i;
+            }
+
+        }
+        pathCoords.add(closestIdx+1,currentPos);
+        for(int i=0;i<pathCoords.size();i++){
+            if(i<=closestIdx) passed.add(pathCoords.get(i));
+            if(i>=closestIdx) goingTo.add(pathCoords.get(i));
+        }
+
+        passedOverLay.setCoords(passed);
+        goingToOverLay.setCoords(goingTo);
+
+        passedOverLay.setMap(naverMap);
+        goingToOverLay.setMap(naverMap);
+
+        /////////////////////////////////
+
 
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
                 .animate(CameraAnimation.Fly,1200)
@@ -129,15 +140,54 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                     Log.d("navagation start", "camera update canceled");
                 });
         naverMap.moveCamera(cameraUpdate);
+
         naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
             @Override
             public void onLocationChange(@NonNull Location location) {
+
+                List<LatLng> passed = new ArrayList<>();
+                List<LatLng> goingTo = new ArrayList<>();
+
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-                LatLng loc = new LatLng(lat,lng);
+                LatLng currentPos = new LatLng(lat,lng);
+                double distance =10000;
+                int closestIdx=0;
+
+                for(int i=0;i<pathCoords.size();i++){
+                    Double lng_on_path = pathCoords.get(i).longitude;
+                    Double lat_on_path = pathCoords.get(i).latitude;
+                    double tmp = distance_Between_LatLong(lat_on_path,lng_on_path, lat,lng);
+                    if(distance > tmp) {
+                        distance = tmp;
+                        closestIdx = i;
+                    }
+
+                }
+                pathCoords.add(closestIdx+1,currentPos);
+                for(int i=0;i<pathCoords.size();i++){
+                    if(i<=closestIdx) passed.add(pathCoords.get(i));
+                    if(i>=closestIdx) goingTo.add(pathCoords.get(i));
+                }
+
+                passedOverLay.setCoords(passed);
+                goingToOverLay.setCoords(goingTo);
+
+                passedOverLay.setMap(naverMap);
+                goingToOverLay.setMap(naverMap);
 
                 Log.d("location class", String.valueOf(location));
             }
         });
     }
+    public static double distance_Between_LatLong(double lat1, double lon1, double lat2, double lon2) {
+        lat1 = Math.toRadians(lat1);
+        lon1 = Math.toRadians(lon1);
+        lat2 = Math.toRadians(lat2);
+        lon2 = Math.toRadians(lon2);
+
+        double earthRadius = 6371.01; //Kilometers
+        return earthRadius * Math.acos(Math.sin(lat1)*Math.sin(lat2) + Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon1 - lon2));
+    }
+
 }
