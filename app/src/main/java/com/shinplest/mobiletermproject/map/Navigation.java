@@ -74,6 +74,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         pathOverlay.setWidth(10);
         pathOverlay.setPassedColor(Color.BLUE);
         pathOverlay.setOutlineWidth(2);
+        Log.d("path",String.valueOf(pathCoords));
 
     }
 
@@ -82,12 +83,14 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         this.naverMap = naverMap;
 
         naverMap.setLocationSource(locationSource);
+        naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         pathOverlay.setMap(naverMap);
         pathOverlay.setProgress(0);
         pathOverlay.setColor(Color.BLUE);
         pathOverlay.setPassedColor(Color.GRAY);
         LocationOverlay locationOverlay = naverMap.getLocationOverlay();
-        locationOverlay.setPosition(pathCoords.get(20));
+        locationOverlay.setPosition(pathCoords.get(0));
+
         locationOverlay.setVisible(true);
 
         PathOverlay passedOverLay = new PathOverlay();
@@ -95,40 +98,40 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         passedOverLay.setColor(Color.GRAY);
         goingToOverLay.setColor(Color.BLUE);
 
-        //////////////////////////////////
-        //// test용 코드////
-        List<LatLng> passed = new ArrayList<>();
-        List<LatLng> goingTo = new ArrayList<>();
-
-        double lat = naverMap.getLocationOverlay().getPosition().latitude;
-        double lng = naverMap.getLocationOverlay().getPosition().longitude;
-        LatLng currentPos = new LatLng(lat,lng);
-        double distance =10000;
-        int closestIdx=0;
-
-        for(int i=0;i<pathCoords.size();i++){
-            Double lng_on_path = pathCoords.get(i).longitude;
-            Double lat_on_path = pathCoords.get(i).latitude;
-            double tmp = distance_Between_LatLong(lat_on_path,lng_on_path, lat,lng);
-            if(distance > tmp) {
-                distance = tmp;
-                closestIdx = i;
-            }
-
-        }
-        pathCoords.add(closestIdx+1,currentPos);
-        for(int i=0;i<pathCoords.size();i++){
-            if(i<=closestIdx) passed.add(pathCoords.get(i));
-            if(i>=closestIdx) goingTo.add(pathCoords.get(i));
-        }
-
-        passedOverLay.setCoords(passed);
-        goingToOverLay.setCoords(goingTo);
-
-        passedOverLay.setMap(naverMap);
-        goingToOverLay.setMap(naverMap);
-
-        /////////////////////////////////
+//        //////////////////////////////////
+//        //// test용 코드////
+//        List<LatLng> passed = new ArrayList<>();
+//        List<LatLng> goingTo = new ArrayList<>();
+//
+//        double lat = naverMap.getLocationOverlay().getPosition().latitude;
+//        double lng = naverMap.getLocationOverlay().getPosition().longitude;
+//        LatLng currentPos = new LatLng(lat,lng);
+//        double distance =10000;
+//        int closestIdx=0;
+//
+//        for(int i=0;i<pathCoords.size();i++){
+//            Double lng_on_path = pathCoords.get(i).longitude;
+//            Double lat_on_path = pathCoords.get(i).latitude;
+//            double tmp = distance_Between_LatLong(lat_on_path,lng_on_path, lat,lng);
+//            if(distance > tmp) {
+//                distance = tmp;
+//                closestIdx = i;
+//            }
+//
+//        }
+//        pathCoords.add(closestIdx+1,currentPos);
+//        for(int i=0;i<pathCoords.size();i++){
+//            if(i<=closestIdx) passed.add(pathCoords.get(i));
+//            if(i>=closestIdx) goingTo.add(pathCoords.get(i));
+//        }
+//
+//        passedOverLay.setCoords(passed);
+//        goingToOverLay.setCoords(goingTo);
+//
+//        passedOverLay.setMap(naverMap);
+//        goingToOverLay.setMap(naverMap);
+//
+//        /////////////////////////////////
 
 
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
@@ -146,6 +149,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public void onLocationChange(@NonNull Location location) {
 
                 List<LatLng> passed = new ArrayList<>();
+                passed.add(pathCoords.get(0));
+                passed.add(pathCoords.get(1));
                 List<LatLng> goingTo = new ArrayList<>();
 
                 double lat = location.getLatitude();
