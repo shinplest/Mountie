@@ -20,11 +20,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.naver.maps.geometry.LatLng;
+import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.CircleOverlay;
 import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
@@ -147,7 +149,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         };
 
        mNaverMap.addOnLocationChangeListener(locationChangeListener);
-//        mNaverMap.addOnLocationChangeListener(location -> mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1));
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
@@ -214,10 +215,18 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         public boolean onClick(@NonNull Overlay overlay) {
                             ((PathOverlay) overlay).setColor(Color.BLUE);
                             pathInfoView.setVisibility(View.VISIBLE);
+                            ///본인 위치 확인
+                            if(checkCurrentLocation(pathOverlays.indexOf(overlay))){
+
+                                startNavi.setEnabled(true);
+                            }else{
+                                startNavi.setEnabled(false);
+                            }
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     //이전에 본인 location 확인 로직 들어가야함
+
                                     Intent intent = new Intent(getActivity(),Navigation.class);
                                     intent.putExtra("pathIndex",pathOverlays.indexOf(overlay));
                                     startActivity(intent);
@@ -230,6 +239,21 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             });
         });
 
+    }
+
+    private boolean checkCurrentLocation(int index) {
+        LatLng current = mNaverMap.getLocationOverlay().getPosition();
+        LatLng startPoint = allPaths.get(index).get(0);
+        LatLng endPoint = allPaths.get(index).get(allPaths.get(index).size()-1);
+        CircleOverlay start = new CircleOverlay();
+        CircleOverlay end = new CircleOverlay();
+        start.setCenter(startPoint);
+        end.setCenter(endPoint);
+        start.setRadius(100);//100m 반경.
+        end.setRadius(100);
+        LatLngBounds SPbounds = start.getBounds();
+        LatLngBounds EPbounds = end.getBounds();
+        return SPbounds.contains(current)||EPbounds.contains(current);
     }
 
 

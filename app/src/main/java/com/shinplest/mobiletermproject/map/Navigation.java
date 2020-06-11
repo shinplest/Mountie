@@ -187,7 +187,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 //
 //        /////////////////////////////////
 
-
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
                 .animate(CameraAnimation.Fly, 1200)
                 .finishCallback(() -> {
