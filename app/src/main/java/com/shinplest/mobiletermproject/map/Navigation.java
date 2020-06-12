@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,11 +29,14 @@ import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.record.RecordFragment;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,7 +96,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             @Override
             public void onClick(View v) {
                 Bitmap bitmap = getBitmapFromView(navigationView);
-                saveBitmapToJpg(bitmap, setFileName());
+                File file = saveBitmapToJpg(bitmap, setFileName());
+                readRecord(file);
             }
         });
     }
@@ -265,34 +270,39 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String filename = format.format(date) + "_Mountie";
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        String filename = format.format(date) + "Mountie";
 
         return filename;
     }
 
     //비트맵 파일을 이미지파일로 저장
-    private void saveBitmapToJpg(Bitmap bitmap, String name) {
-        //내부 저장소 설정
-        File storage = new File(getFilesDir(), "Mountie");
-        if (!storage.exists()) {
-            storage.mkdirs();
+    private File saveBitmapToJpg(Bitmap bitmap, String name) {
+        File storage = getFilesDir();
+        String filename = name + ".jpg";
+        File f = new File(storage, filename);
+
+        try{
+            f.createNewFile();
+            FileOutputStream out = new FileOutputStream(f);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+        }catch(FileNotFoundException ffe){
+            ffe.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
         }
 
-        String filename = name + ".jpg";
+        return f;
+    }
 
-        File tempFile = new File(storage.getPath() + File.separator, filename);
+    //파일을 불러와 레코드에 보여주기
+    private void readRecord(File file){
+        RecordFragment recordFragment = new RecordFragment();
 
-        try {
-            tempFile.createNewFile();
-
-            FileOutputStream out = new FileOutputStream(tempFile);
-
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-            out.close();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        if(file.exists()){
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            recordFragment.addItem(bitmap, "Record1");
         }
     }
 }
