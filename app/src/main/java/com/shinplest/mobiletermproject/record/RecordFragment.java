@@ -24,7 +24,7 @@ public class RecordFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private ArrayList<RecordItem> rList = new ArrayList<>();
+    public ArrayList<RecordItem> rList = new ArrayList<>();
 
     public RecordFragment() {
     }
@@ -49,9 +49,9 @@ public class RecordFragment extends Fragment {
     public void addItem(Bitmap imageRecord, String text) {
         RecordItem item = new RecordItem();
 
-        item.setRecord_txt(text);
+          item.setRecord_txt(text);
         item.setRecord_img(imageRecord);
 
-        rList.add(item);
+          rList.add(item);
     }
 }

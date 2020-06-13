@@ -30,6 +30,7 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.record.RecordFragment;
+import com.shinplest.mobiletermproject.record.RecordItem;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -97,7 +98,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public void onClick(View v) {
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 File file = saveBitmapToJpg(bitmap, setFileName());
-                readRecord(file);
+                updateRecord(file);
             }
         });
     }
@@ -297,12 +298,12 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     //파일을 불러와 레코드에 보여주기
-    private void readRecord(File file){
+    private void updateRecord(File file){
         RecordFragment recordFragment = new RecordFragment();
 
         if(file.exists()){
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            recordFragment.addItem(bitmap, "Record1");
+            recordFragment.addItem(bitmap, "record");
         }
     }
 }
