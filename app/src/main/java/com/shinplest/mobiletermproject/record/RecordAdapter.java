@@ -41,7 +41,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         RecordItem item = mData.get(position);
 
         holder.txt.setText(item.getRecord_txt());
-        holder.img.setImageDrawable(item.getRecord_img());
+        holder.img.setImageBitmap(item.getRecord_img());
     }
 
     @Override
