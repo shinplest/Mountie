@@ -1,6 +1,7 @@
 package com.shinplest.mobiletermproject.record;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ public class RecordFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private ArrayList<RecordItem> rList = new ArrayList<>();
+    public ArrayList<RecordItem> rList = new ArrayList<>();
 
     public RecordFragment() {
     }
@@ -39,18 +40,18 @@ public class RecordFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        addItem(ContextCompat.getDrawable(getActivity(), R.drawable.map), "  기록1");
+        //addItem(ContextCompat.getDrawable(getActivity(), R.drawable.map), "  기록1");
 
         return view;
     }
 
     //데이터 추가
-    public void addItem(Drawable imageRecord, String text) {
+    public void addItem(Bitmap imageRecord, String text) {
         RecordItem item = new RecordItem();
 
-        item.setRecord_txt(text);
+          item.setRecord_txt(text);
         item.setRecord_img(imageRecord);
 
-        rList.add(item);
+          rList.add(item);
     }
 }
