@@ -1,7 +1,9 @@
 package com.shinplest.mobiletermproject.record;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.shinplest.mobiletermproject.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -40,7 +43,9 @@ public class RecordFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        //예시
         //addItem(ContextCompat.getDrawable(getActivity(), R.drawable.map), "  기록1");
+        updateRecord();
 
         return view;
     }
@@ -49,9 +54,24 @@ public class RecordFragment extends Fragment {
     public void addItem(Bitmap imageRecord, String text) {
         RecordItem item = new RecordItem();
 
-          item.setRecord_txt(text);
+        item.setRecord_txt(text);
         item.setRecord_img(imageRecord);
 
-          rList.add(item);
+        rList.add(item);
+    }
+
+    //파일을 불러와 레코드에 보여주기
+    private void updateRecord(){
+        Intent intent = new Intent();
+        Bundle bundle = intent.getExtras();
+        String name = bundle.getString("record");
+        String filename = name + ".jpg";
+
+        File file = getActivity().getFileStreamPath(filename);
+
+        if(file.exists()){
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            addItem(bitmap, "record");
+        }
     }
 }

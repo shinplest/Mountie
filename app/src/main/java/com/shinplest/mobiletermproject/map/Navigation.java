@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -97,8 +98,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             @Override
             public void onClick(View v) {
                 Bitmap bitmap = getBitmapFromView(navigationView);
-                File file = saveBitmapToJpg(bitmap, setFileName());
-                updateRecord(file);
+                String filename = saveBitmapToJpg(bitmap, setFileName());
+
+                Intent intent = new Intent(Navigation.this, RecordFragment.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("newRecord", filename);
+
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -277,8 +283,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         return filename;
     }
 
-    //비트맵 파일을 이미지파일로 저장
-    private File saveBitmapToJpg(Bitmap bitmap, String name) {
+    //비트맵 파일을 이미지파일로 저장 후 파일 이름을 리턴
+    private String saveBitmapToJpg(Bitmap bitmap, String name) {
         File storage = getFilesDir();
         String filename = name + ".jpg";
         File f = new File(storage, filename);
@@ -294,16 +300,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             e.printStackTrace();
         }
 
-        return f;
-    }
-
-    //파일을 불러와 레코드에 보여주기
-    private void updateRecord(File file){
-        RecordFragment recordFragment = new RecordFragment();
-
-        if(file.exists()){
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            recordFragment.addItem(bitmap, "record");
-        }
+        return filename;
     }
 }
