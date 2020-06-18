@@ -21,6 +21,9 @@ import androidx.fragment.app.FragmentManager;
 
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
+import com.naver.maps.map.CameraAnimation;
+import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
@@ -62,7 +65,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     TextView mDownMin;
     TextView mSecLen;
     TextView mUpMin;
+    MapService mapService;
+    List<PathOverlay> pathOverlays;
     NaverMap.OnLocationChangeListener locationChangeListener;
+    LatLng target;
 
     public MapFragmentMain() {
     }
@@ -131,20 +137,46 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 String name = bundle.getString("mountainName");
                 Double x1 = bundle.getDouble("x1");
                 Double y1 = bundle.getDouble("y1");
+                Double x2 = bundle.getDouble("x2");
+                Double y2 = bundle.getDouble("y2");
                 showCustomToast(name + " " + x1 + " " + y1);
+                changeMapLocation(x1,y1,x2,y2);
             }
         }
+    }
+    public void removeOverLay(){
+        if(allPaths!=null&&allPaths.size()!=0){
+            for (int i = 0; i < allPaths.size(); i++) {
+                pathOverlays.get(i).setMap(null);
+            }
+        }else{
+            Log.d("removeOverLay","지울 오버레이가 없어요");
+        }
+
+    }
+    public void changeMapLocation(Double x1, Double y1, Double x2, Double y2){
+        removeOverLay();
+        mNaverMap.removeOnLocationChangeListener(locationChangeListener);
+        target = new LatLng( (y1+y2)/2,(x1+x2)/2);
+        mapService.getPathData(x1, y1, x2, y2);
+
     }
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
-        MapService mapService = new MapService(this);
+        mapService = new MapService(this);
         mNaverMap = naverMap;
+
         //위치가 바뀔때 마다 자동으로 데이터 불러오도록
        locationChangeListener = new NaverMap.OnLocationChangeListener() {
             @Override
             public void onLocationChange(@NonNull Location location) {
-                mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1);
+                Double x1 = location.getLongitude()-0.1;
+                Double x2 =location.getLongitude()+0.1;
+                Double y1 = location.getLatitude()-0.1;
+                Double y2 = location.getLatitude()+0.1;
+                target = new LatLng( (y1+y2)/2,(x1+x2)/2);
+                mapService.getPathData(x1, y1, x2, y1);
             }
         };
 
@@ -203,7 +235,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
         executor.execute(()->{
 
-            List<PathOverlay> pathOverlays = getPathsOverLayList();
+           pathOverlays = getPathsOverLayList();
 
             handler.post(()->{
                 //마커와 등산로 맵에 표시
@@ -225,7 +257,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    //이전에 본인 location 확인 로직 들어가야함
 
                                     Intent intent = new Intent(getActivity(),Navigation.class);
                                     intent.putExtra("pathIndex",pathOverlays.indexOf(overlay));
@@ -236,6 +267,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         }
                     });
                 }
+
+                CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target,12))
+                        .animate(CameraAnimation.Easing);
+                mNaverMap.moveCamera(cameraUpdate);
             });
         });
 
