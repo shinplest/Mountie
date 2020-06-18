@@ -214,8 +214,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public void onLocationChange(@NonNull Location location) {
 
                 List<LatLng> passed = new ArrayList<>();
-                passed.add(pathCoords.get(0));
-                passed.add(pathCoords.get(1));
                 List<LatLng> goingTo = new ArrayList<>();
 
                 double lat = location.getLatitude();
@@ -234,19 +232,27 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                     }
 
                 }
+
                 pathCoords.add(closestIdx + 1, currentPos);
                 for (int i = 0; i < pathCoords.size(); i++) {
                     if (i <= closestIdx) passed.add(pathCoords.get(i));
                     if (i >= closestIdx) goingTo.add(pathCoords.get(i));
+
                 }
 
-                passedOverLay.setCoords(passed);
-                goingToOverLay.setCoords(goingTo);
+                if(passed.size()>=2){
+                    passedOverLay.setCoords(passed);
+                    goingToOverLay.setCoords(goingTo);
 
-                passedOverLay.setMap(naverMap);
-                goingToOverLay.setMap(naverMap);
+                    passedOverLay.setMap(naverMap);
+                    goingToOverLay.setMap(naverMap);
 
-                Log.d("location class", String.valueOf(location));
+                    Log.d("location class", String.valueOf(location));
+                }else{
+                    Log.e("notPassedYet","아직 지나간 길이 없습니다.");
+                }
+
+
             }
         });
     }
