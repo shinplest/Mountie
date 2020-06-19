@@ -21,20 +21,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     ArrayList<String> filteredList;
 
     private OnItemClickListener mListner = null;
-    private ArrayList<mountain> listViewItemList = new ArrayList<mountain>();
+    private ArrayList<mountain> listViewItemList;
 
-    public RecyclerViewAdapter (Context context, ArrayList<mountain> list, ArrayList<String> mList)
-    {
+    public RecyclerViewAdapter(Context context, ArrayList<mountain> list, ArrayList<String> mList) {
         super();
         this.context = context;
         this.unFilteredlist = mList;
         this.filteredList = mList;
         this.listViewItemList = list;
     }
-    public void setOnItemClickListner(OnItemClickListener listner)
-    {
+
+    public void setOnItemClickListner(OnItemClickListener listner) {
         this.mListner = listner;
     }
+
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.search_recyclerview, parent, false);
@@ -57,19 +57,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView)itemView.findViewById(R.id.labelList);
+            textView = (TextView) itemView.findViewById(R.id.labelList);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
-                    for (int i = 0; i < listViewItemList.size(); i++)
-                    {
-                        if(filteredList.get(position).equals(listViewItemList.get(i).getContent()))
-                        {
+                    for (int i = 0; i < listViewItemList.size(); i++) {
+                        if (filteredList.get(position).equals(listViewItemList.get(i).getContent())) {
                             //여기서 이제 listViewItemList 정보 넘겨줘야 함
                             mListner.onItemClick(listViewItemList.get(i).getContent(), listViewItemList.get(i).getTopLeft_lng(),
-                                    listViewItemList.get(i).getTopLeft_lat(),listViewItemList.get(i).getRightBelow_lng(),
+                                    listViewItemList.get(i).getTopLeft_lat(), listViewItemList.get(i).getRightBelow_lng(),
                                     listViewItemList.get(i).getRightBelow_lat());
                         }
                     }
@@ -86,12 +84,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 String charString = constraint.toString();
-                if(charString.isEmpty()) {
+                if (charString.isEmpty()) {
                     filteredList = unFilteredlist;
                 } else {
                     ArrayList<String> filteringList = new ArrayList<>();
-                    for(String name : unFilteredlist) {
-                        if(name.toLowerCase().contains(charString.toLowerCase())) {
+                    for (String name : unFilteredlist) {
+                        if (name.toLowerCase().contains(charString.toLowerCase())) {
                             filteringList.add(name);
                         }
                     }
@@ -104,13 +102,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredList = (ArrayList<String>)results.values;
+                filteredList = (ArrayList<String>) results.values;
                 notifyDataSetChanged();
             }
         };
     }
-    public interface  OnItemClickListener
-    {
+
+    public interface OnItemClickListener {
         void onItemClick(String value, Double x1, Double y1, Double x2, Double y2);
     }
 
