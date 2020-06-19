@@ -8,7 +8,7 @@ import com.shinplest.mobiletermproject.NonSwipeableViewPager;
 import com.shinplest.mobiletermproject.R;
 
 public class MainActivity extends BaseActivity {
-
+    private Long lastBackPressedTime = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,5 +26,14 @@ public class MainActivity extends BaseActivity {
         tabLayout.getTabAt(0).setText(getString(R.string.record));
         tabLayout.getTabAt(1).setText(getString(R.string.map));
         tabLayout.getTabAt(2).setText(getString(R.string.dashboard));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - lastBackPressedTime >= 1000) {
+            lastBackPressedTime = System.currentTimeMillis();
+            showCustomToast(getString(R.string.backbutton));
+        } else
+            finish();
     }
 }
