@@ -66,7 +66,7 @@ public class RecordFragment extends Fragment {
 
         Bundle bundle = getArguments();
 
-        if(bundle != null){
+        if (bundle != null) {
             filename = bundle.getString("newRecord");
             File file = getActivity().getFileStreamPath(filename);
 
