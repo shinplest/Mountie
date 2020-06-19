@@ -159,6 +159,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     }
 
+
     public void changeMapLocation(Double x1, Double y1, Double x2, Double y2) {
         removeOverLay();
         mNaverMap.removeOnLocationChangeListener(locationChangeListener);
@@ -176,12 +177,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         locationChangeListener = location -> {
             if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
                 mLastMapUpdateTime = System.currentTimeMillis();
-                Double x1 = location.getLongitude() - 0.1;
-                Double x2 = location.getLongitude() + 0.1;
-                Double y1 = location.getLatitude() - 0.1;
-                Double y2 = location.getLatitude() + 0.1;
-                target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
-                mapService.getPathData(x1, y1, x2, y1);
+//                Double x1 = location.getLongitude() - 0.1;
+//                Double x2 = location.getLongitude() + 0.1;
+//                Double y1 = location.getLatitude() - 0.1;
+//                Double y2 = location.getLatitude() + 0.1;
+                target = new LatLng(((location.getLatitude() - 0.1) + (location.getLatitude() + 0.1)) / 2, ((location.getLongitude() - 0.1) + (location.getLongitude() + 0.1)) / 2);
+                mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1);
             } else {
 
             }
