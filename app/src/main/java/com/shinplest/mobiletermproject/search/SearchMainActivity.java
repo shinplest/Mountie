@@ -43,6 +43,7 @@ public class SearchMainActivity extends AppCompatActivity implements TextWatcher
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
@@ -68,18 +69,15 @@ public class SearchMainActivity extends AppCompatActivity implements TextWatcher
     }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
         adapter.getFilter().filter(s);
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-
     }
 
     public void addData()
@@ -106,10 +104,34 @@ public class SearchMainActivity extends AppCompatActivity implements TextWatcher
         mountainArrayList.add(new mountain("노고산",126.950058,37.710151,126.950668,37.668816));
         mNameList.add("대모산");
         mountainArrayList.add(new mountain("대모산",127.074352,37.476578,127.473858,37.473858));
+        mNameList.add("대현산");
+        mountainArrayList.add(new mountain("대현산",127.019835,37.55883,127.023736,37.554792));
+        mNameList.add("도봉산");
+        mountainArrayList.add(new mountain("도봉산",126.982162,37.737278,127.027282,37.666401));
+        mNameList.add("망우산");
+        mountainArrayList.add(new mountain("망우산",127.106171,37.596075,127.105007,37.561187));
+        mNameList.add("매봉산(강남구)");
+        mountainArrayList.add(new mountain("매봉산(강남구)",127.040701,37.491478,127.051004,37.486758));
+        mNameList.add("매봉산(마포구)");
+        mountainArrayList.add(new mountain("매봉산(마포구)",126.890337,37.574686,127.897873,37.568369));
+        mNameList.add("매봉산(구로구)");
+        mountainArrayList.add(new mountain("매봉산(구로구)",126.829498,37.506202,126.843906,37.498562));
+        mNameList.add("배봉산");
+        mountainArrayList.add(new mountain("배봉산",127.062902,37.587189,126.066193,37.578636));
+        mNameList.add("백련산");
+        mountainArrayList.add(new mountain("백련산",126.926472,37.596925,126.932995,37.586213));
+        mNameList.add("인릉산");
+        mountainArrayList.add(new mountain("인릉산",127.065615,37.448510,127.093261,37.444746));
+        mNameList.add("범바위산");
+        mountainArrayList.add(new mountain("범바위산",127.091491,37.457926,127.095250,37.454071));
+        mNameList.add("봉산");
+        mountainArrayList.add(new mountain("봉산",126.897318,37.616630,126.900517,37.588971));
+        mNameList.add("봉제산");
+        mountainArrayList.add(new mountain("봉제산",126.851344,37.547693,126.861612,37.537617));
         mNameList.add("봉화산");
         mountainArrayList.add(new mountain("봉화산",127.084876,37.610157,127.088614,37.607598));
         mNameList.add("북한산");
-        mountainArrayList.add(new mountain("북한산",126.969155,37.741071,127.007182,37.62109));
+        mountainArrayList.add(new mountain("북한산",126.949507,37.687164,126.994879,37.613566));
         mNameList.add("상암산");
         mountainArrayList.add(new mountain("상암산",126.890733,37.580576,126.889682,37.575075));
         mNameList.add("새터산");
