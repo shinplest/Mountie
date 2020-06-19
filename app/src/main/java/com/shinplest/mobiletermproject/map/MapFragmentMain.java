@@ -129,11 +129,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Bundle bundle = data.getBundleExtra("bundle");
         if(resultCode == Activity.RESULT_OK)
         {
             if(requestCode == 1)
             {
+                Bundle bundle = data.getBundleExtra("bundle");
+
                 String name = bundle.getString("mountainName");
                 Double x1 = bundle.getDouble("x1");
                 Double y1 = bundle.getDouble("y1");
@@ -142,6 +143,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 showCustomToast(name + " " + x1 + " " + y1);
                 changeMapLocation(x1,y1,x2,y2);
             }
+        }
+        else if(resultCode == Activity.RESULT_CANCELED)
+        {
+
         }
     }
     public void removeOverLay(){
