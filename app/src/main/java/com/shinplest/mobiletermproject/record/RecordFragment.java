@@ -61,17 +61,19 @@ public class RecordFragment extends Fragment {
     }
 
     //파일을 불러와 레코드에 보여주기
-    private void updateRecord(){
-        Intent intent = new Intent();
-        Bundle bundle = intent.getExtras();
-        String name = bundle.getString("record");
-        String filename = name + ".jpg";
+    private void updateRecord() {
+        String filename;
 
-        File file = getActivity().getFileStreamPath(filename);
+        Bundle bundle = getArguments();
 
-        if(file.exists()){
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            addItem(bitmap, "record");
+        if (bundle != null) {
+            filename = bundle.getString("newRecord");
+            File file = getActivity().getFileStreamPath(filename);
+
+            if (file.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                addItem(bitmap, "record");
+            }
         }
     }
 }

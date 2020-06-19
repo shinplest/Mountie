@@ -100,11 +100,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
-                Intent intent = new Intent(Navigation.this, RecordFragment.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("newRecord", filename);
+                RecordFragment recordFragment = new RecordFragment();
 
-                startActivityForResult(intent, 1);
+                Bundle bundle = new Bundle(1);
+                bundle.putString("newRecord", filename);
+                recordFragment.setArguments(bundle);
             }
         });
     }
@@ -240,7 +240,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
                 }
 
-                if(passed.size()>=2){
+                if (passed.size() >= 2) {
                     passedOverLay.setCoords(passed);
                     goingToOverLay.setCoords(goingTo);
 
@@ -248,8 +248,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                     goingToOverLay.setMap(naverMap);
 
                     Log.d("location class", String.valueOf(location));
-                }else{
-                    Log.e("notPassedYet","아직 지나간 길이 없습니다.");
+                } else {
+                    Log.e("notPassedYet", "아직 지나간 길이 없습니다.");
                 }
 
 
@@ -295,14 +295,14 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         String filename = name + ".jpg";
         File f = new File(storage, filename);
 
-        try{
+        try {
             f.createNewFile();
             FileOutputStream out = new FileOutputStream(f);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.close();
-        }catch(FileNotFoundException ffe){
+        } catch (FileNotFoundException ffe) {
             ffe.printStackTrace();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
