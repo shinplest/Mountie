@@ -69,6 +69,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     List<PathOverlay> pathOverlays;
     NaverMap.OnLocationChangeListener locationChangeListener;
     LatLng target;
+    PathOverlay currentPathOverlay;
 
     public MapFragmentMain() {
     }
@@ -234,6 +235,18 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             allPaths.add(latlngs);
         }
     }
+    public void getCheckOVColor(PathOverlay current){
+        if(currentPathOverlay==null){
+            current.setColor(Color.BLUE);
+            currentPathOverlay = current;
+        }else if(currentPathOverlay.equals(current)){
+            currentPathOverlay = current;
+        }else if(currentPathOverlay.equals(current)==false){
+            currentPathOverlay.setColor(Color.WHITE);
+            current.setColor(Color.BLUE);
+            currentPathOverlay = current;
+        }
+    }
     private void drawOverLayWithThread(){
         Executor executor = Executors.newFixedThreadPool(NUMBER_OF_THREAD);
         Handler handler = new Handler(Looper.getMainLooper());
@@ -250,11 +263,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
                         @Override
                         public boolean onClick(@NonNull Overlay overlay) {
-                            ((PathOverlay) overlay).setColor(Color.BLUE);
+                            getCheckOVColor((PathOverlay) overlay);
+//                            ((PathOverlay) overlay).setColor(Color.BLUE);
                             pathInfoView.setVisibility(View.VISIBLE);
                             ///본인 위치 확인
                             if(checkCurrentLocation(pathOverlays.indexOf(overlay))){
-
                                 startNavi.setEnabled(true);
                             }else{
                                 startNavi.setEnabled(false);
