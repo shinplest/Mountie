@@ -3,7 +3,6 @@ package com.shinplest.mobiletermproject.map;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -57,6 +56,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public static ArrayList<ArrayList<LatLng>> allPaths;
     public static ArrayList<Properties> allProperties = null;
     private ArrayList<Feature> mFeature = null;
+
+    private Long mLastMapUpdateTime = 0L;
+
 
     Button startNavi;
     LinearLayout pathInfoView;
@@ -112,8 +114,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         searchBtn = view.findViewById(R.id.editSearchBar);
         searchBtn.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), SearchMainActivity.class);
-            super.onActivityResult(1,1,intent);
-            startActivityForResult(intent,1);
+            super.onActivityResult(1, 1, intent);
+            startActivityForResult(intent, 1);
         });
 
         startNavi = view.findViewById(R.id.start_navi);
@@ -126,14 +128,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == Activity.RESULT_OK)
-        {
-            if(requestCode == 1)
-            {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == 1) {
                 Bundle bundle = data.getBundleExtra("bundle");
 
                 String name = bundle.getString("mountainName");
@@ -142,28 +141,28 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 Double x2 = bundle.getDouble("x2");
                 Double y2 = bundle.getDouble("y2");
                 showCustomToast(name + " " + x1 + " " + y1);
-                changeMapLocation(x1,y1,x2,y2);
+                changeMapLocation(x1, y1, x2, y2);
             }
-        }
-        else if(resultCode == Activity.RESULT_CANCELED)
-        {
+        } else if (resultCode == Activity.RESULT_CANCELED) {
 
         }
     }
-    public void removeOverLay(){
-        if(allPaths!=null&&allPaths.size()!=0){
+
+    public void removeOverLay() {
+        if (allPaths != null && allPaths.size() != 0) {
             for (int i = 0; i < allPaths.size(); i++) {
                 pathOverlays.get(i).setMap(null);
             }
-        }else{
-            Log.d("removeOverLay","지울 오버레이가 없어요");
+        } else {
+            Log.d("removeOverLay", "지울 오버레이가 없어요");
         }
 
     }
-    public void changeMapLocation(Double x1, Double y1, Double x2, Double y2){
+
+    public void changeMapLocation(Double x1, Double y1, Double x2, Double y2) {
         removeOverLay();
         mNaverMap.removeOnLocationChangeListener(locationChangeListener);
-        target = new LatLng( (y1+y2)/2,(x1+x2)/2);
+        target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
         mapService.getPathData(x1, y1, x2, y2);
 
     }
@@ -173,20 +172,22 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mapService = new MapService(this);
         mNaverMap = naverMap;
 
-        //위치가 바뀔때 마다 자동으로 데이터 불러오도록
-       locationChangeListener = new NaverMap.OnLocationChangeListener() {
-            @Override
-            public void onLocationChange(@NonNull Location location) {
-                Double x1 = location.getLongitude()-0.1;
-                Double x2 =location.getLongitude()+0.1;
-                Double y1 = location.getLatitude()-0.1;
-                Double y2 = location.getLatitude()+0.1;
-                target = new LatLng( (y1+y2)/2,(x1+x2)/2);
+        //위치가 바뀔때 마다 자동으로 데이터 불러오도록 / 10초 지났을때만 불러오게 변경
+        locationChangeListener = location -> {
+            if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
+                mLastMapUpdateTime = System.currentTimeMillis();
+                Double x1 = location.getLongitude() - 0.1;
+                Double x2 = location.getLongitude() + 0.1;
+                Double y1 = location.getLatitude() - 0.1;
+                Double y2 = location.getLatitude() + 0.1;
+                target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
                 mapService.getPathData(x1, y1, x2, y1);
+            } else {
+
             }
         };
 
-       mNaverMap.addOnLocationChangeListener(locationChangeListener);
+        mNaverMap.addOnLocationChangeListener(locationChangeListener);
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
@@ -235,30 +236,32 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             allPaths.add(latlngs);
         }
     }
-    public void getCheckOVColor(PathOverlay current){
-        if(currentPathOverlay==null){
+
+    public void getCheckOVColor(PathOverlay current) {
+        if (currentPathOverlay == null) {
             current.setColor(Color.BLUE);
             currentPathOverlay = current;
-        }else if(currentPathOverlay.equals(current)){
+        } else if (currentPathOverlay.equals(current)) {
             currentPathOverlay = current;
-        }else if(currentPathOverlay.equals(current)==false){
+        } else if (currentPathOverlay.equals(current) == false) {
             currentPathOverlay.setColor(Color.WHITE);
             current.setColor(Color.BLUE);
             currentPathOverlay = current;
         }
     }
-    private void drawOverLayWithThread(){
+
+    private void drawOverLayWithThread() {
         Executor executor = Executors.newFixedThreadPool(NUMBER_OF_THREAD);
         Handler handler = new Handler(Looper.getMainLooper());
 
-        executor.execute(()->{
+        executor.execute(() -> {
 
-           pathOverlays = getPathsOverLayList();
+            pathOverlays = getPathsOverLayList();
 
-            handler.post(()->{
+            handler.post(() -> {
                 //마커와 등산로 맵에 표시
 //                marker.setMap(mNaverMap);
-                for(int i=0;i<pathOverlays.size();i++){
+                for (int i = 0; i < pathOverlays.size(); i++) {
                     pathOverlays.get(i).setMap(mNaverMap);
                     pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
                         @Override
@@ -267,17 +270,17 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 //                            ((PathOverlay) overlay).setColor(Color.BLUE);
                             pathInfoView.setVisibility(View.VISIBLE);
                             ///본인 위치 확인
-                            if(checkCurrentLocation(pathOverlays.indexOf(overlay))){
+                            if (checkCurrentLocation(pathOverlays.indexOf(overlay))) {
                                 startNavi.setEnabled(true);
-                            }else{
+                            } else {
                                 startNavi.setEnabled(false);
                             }
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
-                                    Intent intent = new Intent(getActivity(),Navigation.class);
-                                    intent.putExtra("pathIndex",pathOverlays.indexOf(overlay));
+                                    Intent intent = new Intent(getActivity(), Navigation.class);
+                                    intent.putExtra("pathIndex", pathOverlays.indexOf(overlay));
                                     startActivity(intent);
                                 }
                             });
@@ -286,7 +289,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     });
                 }
 
-                CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target,12))
+                CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target, 12))
                         .animate(CameraAnimation.Easing);
                 mNaverMap.moveCamera(cameraUpdate);
             });
@@ -297,7 +300,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private boolean checkCurrentLocation(int index) {
         LatLng current = mNaverMap.getLocationOverlay().getPosition();
         LatLng startPoint = allPaths.get(index).get(0);
-        LatLng endPoint = allPaths.get(index).get(allPaths.get(index).size()-1);
+        LatLng endPoint = allPaths.get(index).get(allPaths.get(index).size() - 1);
         CircleOverlay start = new CircleOverlay();
         CircleOverlay end = new CircleOverlay();
         start.setCenter(startPoint);
@@ -306,11 +309,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         end.setRadius(100);
         LatLngBounds SPbounds = start.getBounds();
         LatLngBounds EPbounds = end.getBounds();
-        return SPbounds.contains(current)||EPbounds.contains(current);
+        return SPbounds.contains(current) || EPbounds.contains(current);
     }
 
 
-    private List<PathOverlay> getPathsOverLayList(){
+    private List<PathOverlay> getPathsOverLayList() {
         List<PathOverlay> paths = new ArrayList<>();
         for (int i = 0; i < allPaths.size(); i++) {
             PathOverlay path = new PathOverlay();
@@ -325,6 +328,4 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
         return paths;
     }
-
-
 }
