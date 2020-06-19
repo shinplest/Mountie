@@ -177,11 +177,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         locationChangeListener = location -> {
             if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
                 mLastMapUpdateTime = System.currentTimeMillis();
-//                Double x1 = location.getLongitude() - 0.1;
-//                Double x2 = location.getLongitude() + 0.1;
-//                Double y1 = location.getLatitude() - 0.1;
-//                Double y2 = location.getLatitude() + 0.1;
+                //target 으로 카메라 옮기기 위해 중점 지정.
                 target = new LatLng(((location.getLatitude() - 0.1) + (location.getLatitude() + 0.1)) / 2, ((location.getLongitude() - 0.1) + (location.getLongitude() + 0.1)) / 2);
+                //바뀐 위치의 패쓰 가져오기.
                 mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1);
             } else {
 
