@@ -30,8 +30,10 @@ import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.map.models.data.Record;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 import com.shinplest.mobiletermproject.record.RecordItem;
+import com.shinplest.mobiletermproject.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +55,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
-
+    private List<LatLng> passed;
+    private List<LatLng> goingTo;
+    private double maxAltitude;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (locationSource.onRequestPermissionsResult(
@@ -94,9 +98,15 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         //Record capture
         Button record = findViewById(R.id.record);
         FrameLayout navigationView = findViewById(R.id.navigation);
-        record.setOnClickListener(new View.OnClickListener() {
+
+        //longClick ==> 기록 끝내기
+        record.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
+                float distance;
+                float avgSpeed;
+                float time;
+                double altitude;
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
@@ -105,14 +115,67 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 Bundle bundle = new Bundle(1);
                 bundle.putString("newRecord", filename);
                 recordFragment.setArguments(bundle);
+
+                //거리,시간,속도,최고고도 값.
+                distance = getAllPassedDistance();
+                time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
+                avgSpeed = distance/time;
+                altitude = maxAltitude;
+                Toast.makeText(getApplicationContext(),"저장",Toast.LENGTH_SHORT).show();
+                RecordItem hikingRecord = makeRecordObject(distance,avgSpeed,time,altitude,filename);
+
+                return true;
             }
         });
+
+        //shortClick ==> 기록 시작하기 / 멈추기
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(record.getText().equals("기록")){
+                    record.setText("멈춤");
+                    //수환님 스톱워치 쓰레드 시작.
+                }else if(record.getText().equals("멈춤")){
+                    record.setText("기록");
+                    //수환님 스톱워치 쓰레드 멈춤.
+                }
+
+            }
+        });
+    }
+
+    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename ){
+
+        //반올림 및 string value 처리.
+        String distanceS = String.format("%.2f", distance);
+        String avgSpeedS = String.format("%.2f", avgSpeed);
+        String timeS = String.format("%.1f", time);
+        String altitudeS = String.format("%.2f", altitude);
+
+        RecordItem hikingRecord = new RecordItem();
+
+        hikingRecord.setAvgSpeed(avgSpeedS);
+        hikingRecord.setMaxAltitude(altitudeS);
+        hikingRecord.setTotalDistance(distanceS);
+        hikingRecord.setTime(timeS);
+        //수환님 여기서 file이름 저장해주세욤
+        return hikingRecord;
+    }
+
+    //passed에 저장된 지나온 길을 다 더함.
+    private float getAllPassedDistance(){
+        float distance = 0;
+
+        for(int i=0;i<passed.size()-1;i++){
+            distance+=distance_Between_LatLong(passed.get(i).latitude,passed.get(i).longitude,passed.get(i+1).latitude,passed.get(i+1).longitude);
+        }
+        return distance;
     }
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
-
+        maxAltitude = 0;
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         pathOverlay.setMap(naverMap);
@@ -129,75 +192,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         passedOverLay.setColor(Color.GRAY);
         goingToOverLay.setColor(Color.BLUE);
 
-        //////////////////////////////////
-        //// test용 코드////
-        List<LatLng> passed = new ArrayList<>();
-        List<LatLng> goingTo = new ArrayList<>();
-
-        double lat = naverMap.getLocationOverlay().getPosition().latitude;
-        double lng = naverMap.getLocationOverlay().getPosition().longitude;
-        LatLng currentPos = new LatLng(lat, lng);
-        double distance = 10000;
-        int closestIdx = 0;
-
-        for (int i = 0; i < pathCoords.size(); i++) {
-            Double lng_on_path = pathCoords.get(i).longitude;
-            Double lat_on_path = pathCoords.get(i).latitude;
-            double tmp = distance_Between_LatLong(lat_on_path, lng_on_path, lat, lng);
-            if (distance > tmp) {
-                distance = tmp;
-                closestIdx = i;
-            }
-
-        }
-        pathCoords.add(closestIdx + 1, currentPos);
-        for (int i = 0; i < pathCoords.size(); i++) {
-            if (i <= closestIdx) passed.add(pathCoords.get(i));
-            if (i >= closestIdx) goingTo.add(pathCoords.get(i));
-        }
-
-        passedOverLay.setCoords(passed);
-        goingToOverLay.setCoords(goingTo);
-
-        passedOverLay.setMap(naverMap);
-        goingToOverLay.setMap(naverMap);
-
-        /////////////////////////////////
-
-//        //////////////////////////////////
-//        //// test용 코드////
-//        List<LatLng> passed = new ArrayList<>();
-//        List<LatLng> goingTo = new ArrayList<>();
-//
-//        double lat = naverMap.getLocationOverlay().getPosition().latitude;
-//        double lng = naverMap.getLocationOverlay().getPosition().longitude;
-//        LatLng currentPos = new LatLng(lat,lng);
-//        double distance =10000;
-//        int closestIdx=0;
-//
-//        for(int i=0;i<pathCoords.size();i++){
-//            Double lng_on_path = pathCoords.get(i).longitude;
-//            Double lat_on_path = pathCoords.get(i).latitude;
-//            double tmp = distance_Between_LatLong(lat_on_path,lng_on_path, lat,lng);
-//            if(distance > tmp) {
-//                distance = tmp;
-//                closestIdx = i;
-//            }
-//
-//        }
-//        pathCoords.add(closestIdx+1,currentPos);
-//        for(int i=0;i<pathCoords.size();i++){
-//            if(i<=closestIdx) passed.add(pathCoords.get(i));
-//            if(i>=closestIdx) goingTo.add(pathCoords.get(i));
-//        }
-//
-//        passedOverLay.setCoords(passed);
-//        goingToOverLay.setCoords(goingTo);
-//
-//        passedOverLay.setMap(naverMap);
-//        goingToOverLay.setMap(naverMap);
-//
-//        /////////////////////////////////
 
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
                 .animate(CameraAnimation.Fly, 1200)
@@ -213,8 +207,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             @Override
             public void onLocationChange(@NonNull Location location) {
 
-                List<LatLng> passed = new ArrayList<>();
-                List<LatLng> goingTo = new ArrayList<>();
+                passed = new ArrayList<>();
+                goingTo = new ArrayList<>();
 
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
@@ -252,7 +246,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                     Log.e("notPassedYet", "아직 지나간 길이 없습니다.");
                 }
 
-
+                //위치 변화시에 max 고도 측정.
+               if(location.getAltitude()>maxAltitude){
+                   maxAltitude = location.getAltitude();
+               }
             }
         });
     }
