@@ -3,22 +3,58 @@ package com.shinplest.mobiletermproject.record;
 import android.graphics.Bitmap;
 
 public class RecordItem {
-    private String record_txt;
-    private Bitmap record_img;
+    private String recordTxt;
+    private Bitmap recordImg;
+    private String maxAltitude;
+    private String avgSpeed;
+    private String totalDistance;
+    private String time;
 
     public String getRecord_txt() {
-        return record_txt;
+        return recordTxt;
     }
 
-    public void setRecord_txt(String record_txt) {
-        this.record_txt = record_txt;
+    public void setRecord_txt(String recordTxt) {
+        this.recordTxt = recordTxt;
     }
 
     public Bitmap getRecord_img() {
-        return record_img;
+        return recordImg;
     }
 
-    public void setRecord_img(Bitmap record_img) {
-        this.record_img = record_img;
+    public void setRecord_img(Bitmap recordImg) {
+        this.recordImg = recordImg;
+    }
+
+    public String getMaxAltitude() {
+        return maxAltitude;
+    }
+
+    public void setMaxAltitude(String maxAltitude) {
+        this.maxAltitude = maxAltitude;
+    }
+
+    public String getAvgSpeed() {
+        return avgSpeed;
+    }
+
+    public void setAvgSpeed(String avgSpeed) {
+        this.avgSpeed = avgSpeed;
+    }
+
+    public String getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(String totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

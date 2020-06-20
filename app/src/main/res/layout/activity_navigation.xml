@@ -27,5 +27,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="100px"
-        android:text="기록" />
+        android:text="@string/record" />
 </FrameLayout>
