@@ -58,6 +58,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private List<LatLng> passed;
     private List<LatLng> goingTo;
     private double maxAltitude;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (locationSource.onRequestPermissionsResult(
@@ -119,10 +120,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
                 time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
-                avgSpeed = distance/time;
+                avgSpeed = distance / time;
                 altitude = maxAltitude;
-                Toast.makeText(getApplicationContext(),"저장",Toast.LENGTH_SHORT).show();
-                RecordItem hikingRecord = makeRecordObject(distance,avgSpeed,time,altitude,filename);
+                Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
+                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
 
                 return true;
             }
@@ -132,10 +133,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(record.getText().equals("기록")){
+                if (record.getText().equals("기록")) {
                     record.setText("멈춤");
                     //수환님 스톱워치 쓰레드 시작.
-                }else if(record.getText().equals("멈춤")){
+                } else if (record.getText().equals("멈춤")) {
                     record.setText("기록");
                     //수환님 스톱워치 쓰레드 멈춤.
                 }
@@ -144,7 +145,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         });
     }
 
-    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename ){
+    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename) {
 
         //반올림 및 string value 처리.
         String distanceS = String.format("%.2f", distance);
@@ -163,11 +164,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     //passed에 저장된 지나온 길을 다 더함.
-    private float getAllPassedDistance(){
+    private float getAllPassedDistance() {
         float distance = 0;
 
-        for(int i=0;i<passed.size()-1;i++){
-            distance+=distance_Between_LatLong(passed.get(i).latitude,passed.get(i).longitude,passed.get(i+1).latitude,passed.get(i+1).longitude);
+        for (int i = 0; i < passed.size() - 1; i++) {
+            distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
         }
         return distance;
     }
@@ -247,9 +248,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 }
 
                 //위치 변화시에 max 고도 측정.
-               if(location.getAltitude()>maxAltitude){
-                   maxAltitude = location.getAltitude();
-               }
+                if (location.getAltitude() > maxAltitude) {
+                    maxAltitude = location.getAltitude();
+                }
             }
         });
     }

@@ -50,7 +50,7 @@ public class RecordFragment extends Fragment {
         return view;
     }
 
-    //데이터 추가
+    //데이터 추가 + 거리, 시간, 속도, 고도 추가해야함
     public void addItem(Bitmap imageRecord, String text) {
         RecordItem item = new RecordItem();
 
@@ -72,7 +72,7 @@ public class RecordFragment extends Fragment {
 
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                addItem(bitmap, "record");
+                addItem(bitmap, filename);
             }
         }
     }
