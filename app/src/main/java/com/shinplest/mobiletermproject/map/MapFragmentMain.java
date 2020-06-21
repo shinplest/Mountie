@@ -291,11 +291,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 //                            ((PathOverlay) overlay).setColor(Color.BLUE);
                             pathInfoView.setVisibility(View.VISIBLE);
                             ///본인 위치 확인
-//                            if (checkCurrentLocation(pathOverlays.indexOf(overlay))) {
-//                                startNavi.setEnabled(true);
-//                            } else {
-//                                startNavi.setEnabled(false);
-//                            }
+                            /*if (checkCurrentLocation(pathOverlays.indexOf(overlay))) {
+                                startNavi.setEnabled(true);
+                            } else {
+                                startNavi.setEnabled(false);
+                            }*/
                             startNavi.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

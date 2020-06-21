@@ -12,6 +12,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.health.PackageHealthStats;
 import android.util.Log;
 import android.view.View;
@@ -70,6 +72,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private TextView speedTV;
     private TextView timeTV;
 
+    private TextView stopwatch;
+    private Thread thread;
+    private timeHandler handler;
+    private int hour;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -111,8 +118,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         speedTV = findViewById(R.id.textSpeed);
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
+        stopwatch = findViewById(R.id.tv_timer);
 
-
+        handler = new timeHandler();
 
         //Record capture
         Button record = findViewById(R.id.record);
@@ -123,24 +131,28 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public boolean onLongClick(View v) {
                 float distance;
                 float avgSpeed;
-                float time;
+                int time;
                 double altitude;
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
 
-                Bundle bundle = new Bundle(1);
-                bundle.putString("newRecord", filename);
-                recordFragment.setArguments(bundle);
-
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
-                time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
+                time = hour;//스톱워치 time(hr)값 설정.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
                 Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+
+                Bundle bundle = new Bundle(1);
+                bundle.putString("newRecord", filename);
+                bundle.putFloat("distance", distance);
+                bundle.putFloat("speed", avgSpeed);
+                bundle.putInt("time", time);
+                bundle.putDouble("altitude", altitude);
+                recordFragment.setArguments(bundle);
 
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
@@ -154,10 +166,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public void onClick(View v) {
                 if (record.getText().equals("기록")) {
                     record.setText("멈춤");
-                    //수환님 스톱워치 쓰레드 시작.
+                    //스톱워치 쓰레드 시작.
+                    thread = new timeThread();
+                    thread.start();
                 } else if (record.getText().equals("멈춤")) {
                     record.setText("기록");
-                    //수환님 스톱워치 쓰레드 멈춤.
+                    //스톱워치 쓰레드 멈춤.
+                    thread.interrupt();
                 }
 
             }
@@ -173,10 +188,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         String altitudeS = String.format("%.2f", altitude);
 
         //bottom sheet에 setText(string)해줌.
-        altitudeTV.setText(altitudeS+"m");
-        speedTV.setText(avgSpeedS+"km/h");
-        timeTV.setText(timeS+"h");
-        distanceTV.setText(distanceS+"km");
+        altitudeTV.setText(altitudeS + "m");
+        speedTV.setText(avgSpeedS + "km/h");
+        timeTV.setText(timeS + "h");
+        distanceTV.setText(distanceS + "km");
 
         RecordItem hikingRecord = new RecordItem();
 
@@ -185,6 +200,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         hikingRecord.setTotalDistance(distanceS);
         hikingRecord.setTime(timeS);
         //수환님 여기서 file이름 저장해주세욤
+        hikingRecord.setRecord_txt(filename);
         return hikingRecord;
     }
 
@@ -330,5 +346,37 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         }
 
         return filename;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //스톱워치 스레드
+    class timeThread extends Thread {
+        int i = 0;
+
+        public void run() {
+            while (true) {
+                Message msg = handler.obtainMessage();
+                msg.arg1 = i++;
+                handler.sendMessage(msg);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                    return;
+                }
+            }
+        }
+    }
+
+    public class timeHandler extends Handler {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            int sec = (msg.arg1 / 100) % 60;
+            int min = (msg.arg1 / 100) / 60;
+            hour = msg.arg1 / 360000;
+            String result = String.format("%02d:%02d:%02d", hour, min, sec);
+            stopwatch.setText(result);
+        }
     }
 }

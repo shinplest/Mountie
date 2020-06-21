@@ -51,11 +51,15 @@ public class RecordFragment extends Fragment {
     }
 
     //데이터 추가 + 거리, 시간, 속도, 고도 추가해야함
-    public void addItem(Bitmap imageRecord, String text) {
+    public void addItem(Bitmap imageRecord, String text, String altitude, String speed, String distance, String time) {
         RecordItem item = new RecordItem();
 
         item.setRecord_txt(text);
         item.setRecord_img(imageRecord);
+        item.setMaxAltitude(altitude);
+        item.setTime(time);
+        item.setAvgSpeed(speed);
+        item.setTotalDistance(distance);
 
         rList.add(item);
     }
@@ -63,6 +67,10 @@ public class RecordFragment extends Fragment {
     //파일을 불러와 레코드에 보여주기
     private void updateRecord() {
         String filename;
+        double maxAltitude;
+        float avgSpeed;
+        float totalDistance;
+        int time;
 
         Bundle bundle = getArguments();
 
@@ -70,9 +78,20 @@ public class RecordFragment extends Fragment {
             filename = bundle.getString("newRecord");
             File file = getActivity().getFileStreamPath(filename);
 
+            maxAltitude = bundle.getDouble("altitude");
+            avgSpeed = bundle.getFloat("speed");
+            totalDistance = bundle.getFloat("distance");
+            time = bundle.getInt("time");
+
+            //각 값을 문자열로 변환
+            String altitude = String.valueOf(maxAltitude);
+            String speed = String.valueOf(avgSpeed);
+            String distance = String.valueOf(totalDistance);
+            String hour = String.valueOf(time);
+
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                addItem(bitmap, filename);
+                addItem(bitmap, filename, altitude, speed, distance, hour);
             }
         }
     }
