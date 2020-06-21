@@ -2,6 +2,7 @@ package com.shinplest.mobiletermproject.map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
@@ -16,8 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraUpdate;
@@ -59,6 +63,14 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private List<LatLng> goingTo;
     private double maxAltitude;
 
+    private LinearLayout bottomSheet;
+    private BottomSheetBehavior recordBottomSheet;
+    private TextView distanceTV;
+    private TextView altitudeTV;
+    private TextView speedTV;
+    private TextView timeTV;
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (locationSource.onRequestPermissionsResult(
@@ -86,8 +98,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
 
-        Button back = findViewById(R.id.backToMap);
-        back.setOnClickListener(v -> finish());
         pathCoords = allPaths.get(index);
         pathOverlay = new PathOverlay();
         pathOverlay.setCoords(pathCoords);
@@ -95,11 +105,18 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         pathOverlay.setPassedColor(Color.BLUE);
         pathOverlay.setOutlineWidth(2);
         Log.d("path", String.valueOf(pathCoords));
+        bottomSheet = findViewById(R.id.record_bottom_sheet);
+        recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
+        altitudeTV = findViewById(R.id.textAltitude);
+        speedTV = findViewById(R.id.textSpeed);
+        timeTV = findViewById(R.id.textTime);
+        distanceTV = findViewById(R.id.textDistance);
+
+
 
         //Record capture
         Button record = findViewById(R.id.record);
-        FrameLayout navigationView = findViewById(R.id.navigation);
-
+        CoordinatorLayout navigationView = findViewById(R.id.navigation);
         //longClick ==> 기록 끝내기
         record.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -124,6 +141,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 altitude = maxAltitude;
                 Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+
+                recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
                 return true;
             }
@@ -152,6 +171,12 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         String avgSpeedS = String.format("%.2f", avgSpeed);
         String timeS = String.format("%.1f", time);
         String altitudeS = String.format("%.2f", altitude);
+
+        //bottom sheet에 setText(string)해줌.
+        altitudeTV.setText(altitudeS+"m");
+        speedTV.setText(avgSpeedS+"km/h");
+        timeTV.setText(timeS+"h");
+        distanceTV.setText(distanceS+"km");
 
         RecordItem hikingRecord = new RecordItem();
 

@@ -162,9 +162,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     public void changeMapLocation(Double x1, Double y1, Double x2, Double y2) {
         removeOverLay();
-        mNaverMap.removeOnLocationChangeListener(locationChangeListener);
         target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
         mapService.getPathData(x1, y1, x2, y2);
+        CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target, 12))
+                .animate(CameraAnimation.Easing);
+        mNaverMap.moveCamera(cameraUpdate);
 
     }
 
@@ -173,20 +175,14 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mapService = new MapService(this);
         mNaverMap = naverMap;
 
-        //위치가 바뀔때 마다 자동으로 데이터 불러오도록 / 10초 지났을때만 불러오게 변경
-        locationChangeListener = location -> {
-            if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
-                mLastMapUpdateTime = System.currentTimeMillis();
-                //target 으로 카메라 옮기기 위해 중점 지정.
-                target = new LatLng(((location.getLatitude() - 0.1) + (location.getLatitude() + 0.1)) / 2, ((location.getLongitude() - 0.1) + (location.getLongitude() + 0.1)) / 2);
-                //바뀐 위치의 패쓰 가져오기.
-                mapService.getPathData(location.getLongitude() - 0.1, location.getLatitude() - 0.1, location.getLongitude() + 0.1, location.getLatitude() + 0.1);
-            } else {
+        naverMap.addOnCameraIdleListener(() -> {
+            CameraPosition cameraPosition = naverMap.getCameraPosition();
+            target = new LatLng(((cameraPosition.target.latitude - 0.05) + (cameraPosition.target.latitude + 0.05)) / 2, ((cameraPosition.target.longitude - 0.05) + (cameraPosition.target.longitude + 0.05)) / 2);
+            mapService.getPathData(cameraPosition.target.longitude - 0.05, cameraPosition.target.latitude - 0.05, cameraPosition.target.longitude + 0.05, cameraPosition.target.latitude + 0.05);
+            showCustomToast("카메라 움직임 종료");
+        });
 
-            }
-        };
 
-        mNaverMap.addOnLocationChangeListener(locationChangeListener);
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
         UiSettings uiSettings = naverMap.getUiSettings();
@@ -199,14 +195,40 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void getPathdataSuccess(PathResponse pathResponse) {
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
-        showCustomToast(getString(R.string.map_success_message));
         makeCoodList();
 
         //길 그려주는 부분
         if (allPaths != null) {
             Log.d(TAG, "all path size" + allPaths.size());
-            Log.d(TAG, "all path size" + allPaths.get(1));
-            drawOverLayWithThread();
+            pathOverlays = getPathsOverLayList();
+            //마커와 등산로 맵에 표시
+            for (int i = 0; i < pathOverlays.size(); i++) {
+                pathOverlays.get(i).setMap(mNaverMap);
+                pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
+                    @Override
+                    public boolean onClick(@NonNull Overlay overlay) {
+                        getCheckOVColor((PathOverlay) overlay);
+                        pathInfoView.setVisibility(View.VISIBLE);
+                        ///본인 위치 확인
+//                            if (checkCurrentLocation(pathOverlays.indexOf(overlay))) {
+//                                startNavi.setEnabled(true);
+//                            } else {
+//                                startNavi.setEnabled(false);
+//                            }
+                        startNavi.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                Intent intent = new Intent(getActivity(), Navigation.class);
+                                intent.putExtra("pathIndex", pathOverlays.indexOf(overlay));
+                                startActivity(intent);
+                            }
+                        });
+                        return true;
+                    }
+                });
+            }
+
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
