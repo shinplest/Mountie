@@ -2,6 +2,7 @@ package com.shinplest.mobiletermproject.map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
@@ -16,8 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraUpdate;
@@ -58,6 +62,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private List<LatLng> passed;
     private List<LatLng> goingTo;
     private double maxAltitude;
+    private LinearLayout bottomSheet;
+    private BottomSheetBehavior recordBottomSheet;
+    private TextView distanceTV;
+    private TextView altitudeTV;
+    private TextView speedTV;
+    private TextView timeTV;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (locationSource.onRequestPermissionsResult(
@@ -84,7 +95,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
-
         Button back = findViewById(R.id.backToMap);
         back.setOnClickListener(v -> finish());
         pathCoords = allPaths.get(index);
@@ -94,11 +104,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         pathOverlay.setPassedColor(Color.BLUE);
         pathOverlay.setOutlineWidth(2);
         Log.d("path", String.valueOf(pathCoords));
+        bottomSheet = findViewById(R.id.record_bottom_sheet);
+        recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
+        altitudeTV = findViewById(R.id.textAltitude);
+        speedTV = findViewById(R.id.textSpeed);
+        timeTV = findViewById(R.id.textTime);
+        distanceTV = findViewById(R.id.textDistance);
+
+        recordBottomSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+
 
         //Record capture
         Button record = findViewById(R.id.record);
-        FrameLayout navigationView = findViewById(R.id.navigation);
-
+        CoordinatorLayout navigationView = findViewById(R.id.navigation);
         //longClick ==> 기록 끝내기
         record.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -119,11 +137,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
                 time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
-                avgSpeed = distance/time;
+                avgSpeed = distance / time;
                 altitude = maxAltitude;
-                Toast.makeText(getApplicationContext(),"저장",Toast.LENGTH_SHORT).show();
-                RecordItem hikingRecord = makeRecordObject(distance,avgSpeed,time,altitude,filename);
-
+                Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
+                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+                recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return true;
             }
         });
@@ -132,10 +150,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(record.getText().equals("기록")){
+                if (record.getText().equals("기록")) {
                     record.setText("멈춤");
                     //수환님 스톱워치 쓰레드 시작.
-                }else if(record.getText().equals("멈춤")){
+                } else if (record.getText().equals("멈춤")) {
                     record.setText("기록");
                     //수환님 스톱워치 쓰레드 멈춤.
                 }
@@ -144,13 +162,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         });
     }
 
-    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename ){
+    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename) {
 
         //반올림 및 string value 처리.
         String distanceS = String.format("%.2f", distance);
         String avgSpeedS = String.format("%.2f", avgSpeed);
         String timeS = String.format("%.1f", time);
         String altitudeS = String.format("%.2f", altitude);
+
+        //bottom sheet에 setText(string)해줌.
+        altitudeTV.setText(altitudeS+"m");
+        speedTV.setText(avgSpeedS+"km/h");
+        timeTV.setText(timeS+"h");
+        distanceTV.setText(distanceS+"km");
 
         RecordItem hikingRecord = new RecordItem();
 
@@ -163,11 +187,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     }
 
     //passed에 저장된 지나온 길을 다 더함.
-    private float getAllPassedDistance(){
+    private float getAllPassedDistance() {
         float distance = 0;
 
-        for(int i=0;i<passed.size()-1;i++){
-            distance+=distance_Between_LatLong(passed.get(i).latitude,passed.get(i).longitude,passed.get(i+1).latitude,passed.get(i+1).longitude);
+        for (int i = 0; i < passed.size() - 1; i++) {
+            distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
         }
         return distance;
     }
@@ -247,9 +271,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 }
 
                 //위치 변화시에 max 고도 측정.
-               if(location.getAltitude()>maxAltitude){
-                   maxAltitude = location.getAltitude();
-               }
+                if (location.getAltitude() > maxAltitude) {
+                    maxAltitude = location.getAltitude();
+                }
             }
         });
     }

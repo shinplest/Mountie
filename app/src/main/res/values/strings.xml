@@ -11,4 +11,9 @@
     <string name="map_success_message">등산로 길 정보 가져오기 성공!</string>
     <string name="start">시작하기</string>
     <string name="backbutton">\'뒤로\' 버튼을 한 번 더 누르시면 종료됩니다.</string>
+    <string name="distance">총 거리</string>
+    <string name="time">총 시간</string>
+    <string name="avgSpeed">평균 속도</string>
+    <string name="maxAltitude">최고 고도</string>
+    <string name="checkRecord">등산기록을 확인해보세요!</string>
 </resources>
