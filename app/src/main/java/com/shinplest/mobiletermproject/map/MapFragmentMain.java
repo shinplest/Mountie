@@ -56,7 +56,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public static ArrayList<ArrayList<LatLng>> allPaths;
     public static ArrayList<Properties> allProperties = null;
     private ArrayList<Feature> mFeature = null;
-
+    public static List<LatLng> selectedPath;
+    public static PathOverlay selectedPathOL;
     private Long mLastMapUpdateTime = 0L;
 
 
@@ -71,7 +72,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     List<PathOverlay> pathOverlays;
     NaverMap.OnLocationChangeListener locationChangeListener;
     LatLng target;
-    PathOverlay currentPathOverlay;
+    PathOverlay previousOL;
 
     public MapFragmentMain() {
     }
@@ -119,6 +120,14 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         });
 
         startNavi = view.findViewById(R.id.start_navi);
+        startNavi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), Navigation.class);
+                startActivity(intent);
+            }
+        });
+
         pathInfoView = view.findViewById(R.id.pathInforView);
         mCatNam = view.findViewById(R.id.mCatNam);
         mDownMin = view.findViewById(R.id.mDownMin);
@@ -207,23 +216,19 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
                     @Override
                     public boolean onClick(@NonNull Overlay overlay) {
-                        getCheckOVColor((PathOverlay) overlay);
+                        selectedPathOL = (PathOverlay) overlay;
+                        selectedPath = ((PathOverlay) overlay).getCoords();
+                        getCheckOVColor();
                         pathInfoView.setVisibility(View.VISIBLE);
-                        ///본인 위치 확인
-//                            if (checkCurrentLocation(pathOverlays.indexOf(overlay))) {
-//                                startNavi.setEnabled(true);
-//                            } else {
-//                                startNavi.setEnabled(false);
-//                            }
-                        startNavi.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
 
-                                Intent intent = new Intent(getActivity(), Navigation.class);
-                                intent.putExtra("pathIndex", pathOverlays.indexOf(overlay));
-                                startActivity(intent);
-                            }
-                        });
+                        ///본인 위치 확인
+                        if (checkCurrentLocation()) {
+                            startNavi.setEnabled(true);
+                        } else {
+                            startNavi.setEnabled(false);
+                        }
+
+
                         return true;
                     }
                 });
@@ -258,24 +263,24 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
     }
 
-    public void getCheckOVColor(PathOverlay current) {
-        if (currentPathOverlay == null) {
-            current.setColor(Color.BLUE);
-            currentPathOverlay = current;
-        } else if (currentPathOverlay.equals(current)) {
-            currentPathOverlay = current;
-        } else if (currentPathOverlay.equals(current) == false) {
-            currentPathOverlay.setColor(Color.WHITE);
-            current.setColor(Color.BLUE);
-            currentPathOverlay = current;
+    public void getCheckOVColor() {
+        if (previousOL==null) {
+            selectedPathOL.setColor(Color.BLUE);
+            previousOL = selectedPathOL;
+        } else if (previousOL.equals(selectedPathOL)) {
+            previousOL = selectedPathOL;
+        } else if (previousOL.equals(selectedPathOL) == false) {
+            previousOL.setColor(Color.WHITE);
+            selectedPathOL.setColor(Color.BLUE);
+            previousOL = selectedPathOL;
         }
     }
 
 
-    private boolean checkCurrentLocation(int index) {
+    private boolean checkCurrentLocation() {
         LatLng current = mNaverMap.getLocationOverlay().getPosition();
-        LatLng startPoint = allPaths.get(index).get(0);
-        LatLng endPoint = allPaths.get(index).get(allPaths.get(index).size() - 1);
+        LatLng startPoint = selectedPath.get(0);
+        LatLng endPoint = selectedPath.get(selectedPath.size() - 1);
         CircleOverlay start = new CircleOverlay();
         CircleOverlay end = new CircleOverlay();
         start.setCenter(startPoint);
@@ -291,15 +296,23 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private List<PathOverlay> getPathsOverLayList() {
         List<PathOverlay> paths = new ArrayList<>();
         for (int i = 0; i < allPaths.size(); i++) {
-            PathOverlay path = new PathOverlay();
-            path.setCoords(allPaths.get(i));
-            path.setWidth(10);
-            path.setOutlineWidth(5);
-            paths.add(path);
-//                    중간점에 마커 좌표
-//                Marker marker = new Marker();
-//                marker.setPosition(allPaths.get(i).get(allPaths.get(i).size() / 2));
 
+            //selected path와 같은 애를 가지고 온 경우 걔는 따로 그리지 않음.
+            if(selectedPath!=null) {
+                if (allPaths.get(i).equals(selectedPath) == false) {
+                    PathOverlay path = new PathOverlay();
+                    path.setCoords(allPaths.get(i));
+                    path.setWidth(30);
+                    path.setOutlineWidth(5);
+                    paths.add(path);
+                }
+            }else{
+                PathOverlay path = new PathOverlay();
+                path.setCoords(allPaths.get(i));
+                path.setWidth(30);
+                path.setOutlineWidth(5);
+                paths.add(path);
+            }
         }
         return paths;
     }

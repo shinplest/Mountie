@@ -52,10 +52,12 @@ import java.util.Date;
 import java.util.List;
 
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.allPaths;
+import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPath;
+import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
     private PathOverlay pathOverlay;
-    private ArrayList<LatLng> pathCoords;
+    private List<LatLng> pathCoords;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
@@ -90,26 +92,20 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         locationSource =
                 new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
-        int index = getIntent().getExtras().getInt("pathIndex");
 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
 
-        pathCoords = allPaths.get(index);
-        pathOverlay = new PathOverlay();
-        pathOverlay.setCoords(pathCoords);
-        pathOverlay.setWidth(10);
-        pathOverlay.setPassedColor(Color.BLUE);
-        pathOverlay.setOutlineWidth(2);
-        Log.d("path", String.valueOf(pathCoords));
+        pathCoords = selectedPathOL.getCoords();
+        pathOverlay = selectedPathOL;
+
         bottomSheet = findViewById(R.id.record_bottom_sheet);
         recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
         altitudeTV = findViewById(R.id.textAltitude);
         speedTV = findViewById(R.id.textSpeed);
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
-
 
 
         //Record capture
@@ -137,8 +133,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
-                Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+                bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return true;
             }
@@ -169,10 +165,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         String altitudeS = String.format("%.2f", altitude);
 
         //bottom sheet에 setText(string)해줌.
-        altitudeTV.setText(altitudeS+"m");
-        speedTV.setText(avgSpeedS+"km/h");
-        timeTV.setText(timeS+"h");
-        distanceTV.setText(distanceS+"km");
+        altitudeTV.setText(altitudeS + "m");
+        speedTV.setText(avgSpeedS + "km/h");
+        timeTV.setText(timeS + "h");
+        distanceTV.setText(distanceS + "km");
 
         RecordItem hikingRecord = new RecordItem();
 
@@ -180,6 +176,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         hikingRecord.setMaxAltitude(altitudeS);
         hikingRecord.setTotalDistance(distanceS);
         hikingRecord.setTime(timeS);
+        hikingRecord.setDate(new Date());
         //수환님 여기서 file이름 저장해주세욤
         return hikingRecord;
     }
