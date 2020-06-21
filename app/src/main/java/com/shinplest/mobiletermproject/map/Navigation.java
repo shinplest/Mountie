@@ -85,8 +85,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
 
-        Button back = findViewById(R.id.backToMap);
-        back.setOnClickListener(v -> finish());
         pathCoords = allPaths.get(index);
         pathOverlay = new PathOverlay();
         pathOverlay.setCoords(pathCoords);
