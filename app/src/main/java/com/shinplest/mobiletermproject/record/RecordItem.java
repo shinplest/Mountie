@@ -2,6 +2,8 @@ package com.shinplest.mobiletermproject.record;
 
 import android.graphics.Bitmap;
 
+import java.util.Date;
+
 public class RecordItem {
     private String recordTxt;
     private Bitmap recordImg;
@@ -9,6 +11,15 @@ public class RecordItem {
     private String avgSpeed;
     private String totalDistance;
     private String time;
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getRecord_txt() {
         return recordTxt;
