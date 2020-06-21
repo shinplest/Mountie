@@ -95,8 +95,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
-        Button back = findViewById(R.id.backToMap);
-        back.setOnClickListener(v -> finish());
+
         pathCoords = allPaths.get(index);
         pathOverlay = new PathOverlay();
         pathOverlay.setCoords(pathCoords);
@@ -111,7 +110,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
 
-        recordBottomSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
 
 
         //Record capture

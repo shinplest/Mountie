@@ -10,6 +10,7 @@
     app:behavior_hideable="false"
     app:behavior_peekHeight="250dp"
     android:id="@+id/record_bottom_sheet"
+    android:visibility="gone"
     android:orientation="vertical"
     >
     <LinearLayout

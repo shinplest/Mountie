@@ -7,10 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".map.Navigation"
     >
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
 
         <fragment
             android:id="@+id/naviMap"
@@ -18,21 +14,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <Button
-            android:id="@+id/backToMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50px"
-            android:layout_marginTop="50px"
-            android:text="돌아가기" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/record"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:layout_marginBottom="100px"
-            android:text="@string/record" />
-    </FrameLayout>
+            android:layout_gravity="center"
+            android:text="진행시간"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="12:40:00"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/shape_circle"
+        android:text="@string/record"
+        android:textSize="25dp" />
     <include layout="@layout/sheet_record"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
