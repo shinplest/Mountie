@@ -24,7 +24,8 @@
                 android:layout_height="25dp"
                 android:background="#B7F0B1"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:paddingLeft="15dp"/>
 
             <ImageView
                 android:id="@+id/record_img"

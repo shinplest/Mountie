@@ -54,10 +54,12 @@ import java.util.Date;
 import java.util.List;
 
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.allPaths;
+import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPath;
+import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
     private PathOverlay pathOverlay;
-    private ArrayList<LatLng> pathCoords;
+    private List<LatLng> pathCoords;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private NaverMap naverMap;
@@ -99,19 +101,14 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         locationSource =
                 new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
-        int index = getIntent().getExtras().getInt("pathIndex");
 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
 
-        pathCoords = allPaths.get(index);
-        pathOverlay = new PathOverlay();
-        pathOverlay.setCoords(pathCoords);
-        pathOverlay.setWidth(10);
-        pathOverlay.setPassedColor(Color.BLUE);
-        pathOverlay.setOutlineWidth(2);
-        Log.d("path", String.valueOf(pathCoords));
+        pathCoords = selectedPathOL.getCoords();
+        pathOverlay = selectedPathOL;
+
         bottomSheet = findViewById(R.id.record_bottom_sheet);
         recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
         altitudeTV = findViewById(R.id.textAltitude);
@@ -143,7 +140,6 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 time = hour;//스톱워치 time(hr)값 설정.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
-                Toast.makeText(getApplicationContext(), "저장", Toast.LENGTH_SHORT).show();
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
 
                 Bundle bundle = new Bundle(1);
@@ -154,6 +150,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 bundle.putDouble("altitude", altitude);
                 recordFragment.setArguments(bundle);
 
+                bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
                 return true;
@@ -199,6 +196,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         hikingRecord.setMaxAltitude(altitudeS);
         hikingRecord.setTotalDistance(distanceS);
         hikingRecord.setTime(timeS);
+        hikingRecord.setDate(new Date());
         //수환님 여기서 file이름 저장해주세욤
         hikingRecord.setRecord_txt(filename);
         return hikingRecord;

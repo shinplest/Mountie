@@ -46,6 +46,8 @@ public class RecordFragment extends Fragment {
         //예시
         //addItem(ContextCompat.getDrawable(getActivity(), R.drawable.map), "  기록1");
         updateRecord();
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.map);
+        addItem(bitmap, "text", "text", "text", "text", "text");
 
         return view;
     }
