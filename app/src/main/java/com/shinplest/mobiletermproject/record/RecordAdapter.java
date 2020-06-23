@@ -41,6 +41,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         RecordItem item = mData.get(position);
 
         holder.txt.setText(item.getRecord_txt());
+        holder.altitude.setText(item.getMaxAltitude());
+        holder.speed.setText(item.getAvgSpeed());
+        holder.distance.setText(item.getTotalDistance());
+        holder.time.setText(item.getTime());
         holder.img.setImageBitmap(item.getRecord_img());
     }
 
@@ -51,6 +55,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txt;
+        TextView altitude;
+        TextView speed;
+        TextView distance;
+        TextView time;
         ImageView img;
 
         ViewHolder(View itemView) {
@@ -58,6 +66,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
             txt = itemView.findViewById(R.id.record_txt);
             img = itemView.findViewById(R.id.record_img);
+            altitude = itemView.findViewById(R.id.txt_maxAltitude);
+            speed = itemView.findViewById(R.id.txt_avgSpeed);
+            distance = itemView.findViewById(R.id.txt_totalDistance);
+            time = itemView.findViewById(R.id.txt_time);
         }
     }
 }

@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/record_Card"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="325dp"
         android:layout_margin="25dp"
         app:cardCornerRadius="5dp">
 
@@ -24,14 +24,71 @@
                 android:layout_height="25dp"
                 android:background="#B7F0B1"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:paddingLeft="15dp"/>
 
             <ImageView
                 android:id="@+id/record_img"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="200dp"
                 android:layout_below="@+id/record_txt"
                 android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:id="@+id/record_lin2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/record_img">
+
+                <TextView
+                    android:id="@+id/txt_maxAltitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="#B7F0B1"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_avgSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="#B7F0B1"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/record_lin3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/record_lin2">
+
+                <TextView
+                    android:id="@+id/txt_totalDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="#B7F0B1"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="#B7F0B1"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 
