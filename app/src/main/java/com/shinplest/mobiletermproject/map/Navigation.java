@@ -1,27 +1,22 @@
 package com.shinplest.mobiletermproject.map;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.FragmentManager;
-
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.health.PackageHealthStats;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.naver.maps.geometry.LatLng;
@@ -31,15 +26,12 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.Projection;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.map.models.data.Record;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 import com.shinplest.mobiletermproject.record.RecordItem;
-import com.shinplest.mobiletermproject.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,14 +39,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.shinplest.mobiletermproject.map.MapFragmentMain.allPaths;
-import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPath;
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
