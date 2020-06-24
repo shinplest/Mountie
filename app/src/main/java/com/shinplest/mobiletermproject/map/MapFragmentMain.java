@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,6 +41,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.naver.maps.map.CameraUpdate.REASON_LOCATION;
+
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
     private final String TAG = MapFragmentMain.class.getSimpleName();
@@ -54,6 +55,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private ArrayList<Feature> mFeature = null;
     public static List<LatLng> selectedPath;
     public static PathOverlay selectedPathOL;
+    private int changeReason;
+    private Long mLastMapUpdateTime = 0L;
+
 
     Button startNavi;
     Button searchBtn;
@@ -176,14 +180,25 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mapService = new MapService(this);
         mNaverMap = naverMap;
 
+        naverMap.addOnCameraChangeListener((reason, animated) -> {
+            Log.i("NaverMap", "카메라 변경 - reson: " + reason + ", animated: " + animated);
+            changeReason = reason;
+        });
+
         naverMap.addOnCameraIdleListener(() -> {
+            //위치변화일경우 10초가 지났을때만 업데이트 되도록 변경
+            if (changeReason == REASON_LOCATION) {
+                if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
+                    CameraPosition cameraPosition = naverMap.getCameraPosition();
+                    target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+                    mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                } else {
+                }
+            }
             CameraPosition cameraPosition = naverMap.getCameraPosition();
             target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
             mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
-            //showCustomToast("카메라 움직임 종료");
-
         });
-
 
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
@@ -213,6 +228,18 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         selectedPath = ((PathOverlay) overlay).getCoords();
                         getCheckOVColor();
                         sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+
+
+                        Log.d(TAG, pathOverlays.indexOf(overlay)+"");
+                        if(pathOverlays.indexOf(overlay)!= -1){
+                            Properties properties = allProperties.get(pathOverlays.indexOf(overlay));
+                            mCatNam.setText("난이도 : " + properties.getCatNam());
+                            mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
+                            mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
+                            mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
+                        }
+
+
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
