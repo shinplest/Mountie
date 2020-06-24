@@ -25,7 +25,7 @@ public class MapService {
     void getPathData(Double x1, Double y1, Double x2, Double y2) {
         Log.d(TAG, "BOX(" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ")");
         mPathRetrofitInterface.getPathInfo("data", "GetFeature", "LT_L_FRSTCLIMB", "5899463B-A474-3502-AD62-14F8C481A43C",
-                "http://com.shinplest.mobiletermproject", "BOX(" + x1 + ", " + y1 + ", " +  x2 + ", " + y2 + ")", 500).enqueue(new Callback<PathResponse>() {
+                "http://com.shinplest.mobiletermproject", "BOX(" + x1 + ", " + y1 + ", " +  x2 + ", " + y2 + ")", 1000).enqueue(new Callback<PathResponse>() {
             @Override
             public void onResponse(Call<PathResponse> call, Response<PathResponse> response) {
                 final PathResponse pathResponse = response.body();
