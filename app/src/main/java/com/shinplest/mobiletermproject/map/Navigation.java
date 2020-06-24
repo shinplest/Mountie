@@ -77,6 +77,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private TextView stopwatch;
     private Thread thread;
     private timeHandler handler;
+    //시간 변수
     private int hour;
 
 
@@ -197,7 +198,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         hikingRecord.setTotalDistance(distanceS);
         hikingRecord.setTime(timeS);
         hikingRecord.setDate(new Date());
-        //수환님 여기서 file이름 저장해주세욤
+        //file이름 저장
         hikingRecord.setRecord_txt(filename);
         return hikingRecord;
     }

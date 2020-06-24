@@ -222,11 +222,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         pathInfoView.setVisibility(View.VISIBLE);
 
                         ///본인 위치 확인
-                        if (checkCurrentLocation()) {
+                        /*if (checkCurrentLocation()) {
                             startNavi.setEnabled(true);
                         } else {
                             startNavi.setEnabled(false);
-                        }
+                        }*/
 
 
                         return true;
