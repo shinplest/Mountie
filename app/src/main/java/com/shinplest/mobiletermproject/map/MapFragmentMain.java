@@ -37,6 +37,7 @@ import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public static PathOverlay selectedPathOL;
 
     Button startNavi;
-    LinearLayout pathInfoView;
     Button searchBtn;
     TextView mCatNam;
     TextView mDownMin;
@@ -65,6 +65,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     List<PathOverlay> pathOverlays;
     LatLng target;
     PathOverlay previousOL;
+    SlidingUpPanelLayout sulMap;
 
     public MapFragmentMain() {
     }
@@ -114,12 +115,17 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             }
         });
 
-        pathInfoView = view.findViewById(R.id.pathInforView);
         mCatNam = view.findViewById(R.id.mCatNam);
         mDownMin = view.findViewById(R.id.mDownMin);
         mSecLen = view.findViewById(R.id.mSecLen);
         mUpMin = view.findViewById(R.id.mUpMin);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        sulMap = view.findViewById(R.id.sul_map);
     }
 
     @Override
@@ -206,7 +212,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         selectedPathOL = (PathOverlay) overlay;
                         selectedPath = ((PathOverlay) overlay).getCoords();
                         getCheckOVColor();
-                        pathInfoView.setVisibility(View.VISIBLE);
+                        sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
