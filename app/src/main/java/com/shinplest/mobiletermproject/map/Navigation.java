@@ -1,5 +1,6 @@
 package com.shinplest.mobiletermproject.map;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,6 +20,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraUpdate;
@@ -39,14 +43,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
+import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
+    private final String TAG = Navigation.class.getSimpleName();
+
     private PathOverlay pathOverlay;
     private List<LatLng> pathCoords;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
@@ -85,6 +93,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_navigation);
@@ -131,6 +140,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+                Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
 
                 Bundle bundle = new Bundle(1);
                 bundle.putString("newRecord", filename);
@@ -142,6 +152,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                recordItems.add(hikingRecord);
+                saveToSP(recordItems);
 
                 return true;
             }
@@ -195,11 +208,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     //passed에 저장된 지나온 길을 다 더함.
     private float getAllPassedDistance() {
         float distance = 0;
-
-        for (int i = 0; i < passed.size() - 1; i++) {
-            distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
-        }
-        return distance;
+        if (passed != null) {
+            for (int i = 0; i < passed.size() - 1; i++) {
+                distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
+            }
+            return distance;
+        } else
+            return 0;
     }
 
     @Override
@@ -366,5 +381,15 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             String result = String.format("%02d:%02d:%02d", hour, min, sec);
             stopwatch.setText(result);
         }
+    }
+
+    private void saveToSP(ArrayList<RecordItem> recordItemList) {
+        Gson gson = new GsonBuilder().create();
+        Type listType = new TypeToken<ArrayList<RecordItem>>() {
+        }.getType();
+        String json = gson.toJson(recordItemList, listType);
+
+        SharedPreferences sp = getSharedPreferences("SharedPreference", MODE_PRIVATE);
+        sp.edit().putString("RecordItems", json).apply();
     }
 }
