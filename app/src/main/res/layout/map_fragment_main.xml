@@ -1,37 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sul_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:gravity="bottom"
+    sothree:umanoOverlay="true"
+    sothree:umanoPanelHeight="0dp"
+    sothree:umanoShadowHeight="20dp">
 
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.naver.maps.map.MapFragment"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/editSearchBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/shape_rounding"
-        android:elevation="2dp"
-        android:hint="@string/search"
-        android:textColor="@color/black" />
+        <fragment
+            android:id="@+id/map"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/pathInforView"
+        <Button
+            android:id="@+id/editSearchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/shape_rounding"
+            android:elevation="2dp"
+            android:hint="@string/search"
+            android:textColor="@color/black" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_slidingup_panel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:visibility="invisible">
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/map_drag_line"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_line"
+            sothree:layout_constraintEnd_toEndOf="parent"
+            sothree:layout_constraintStart_toStartOf="parent"
+            sothree:layout_constraintTop_toTopOf="parent"
+            sothree:layout_constraintWidth_percent="0.2" />
 
         <LinearLayout
+            android:id="@+id/ll_map_slidingpanel"
+            sothree:layout_constraintTop_toBottomOf="@+id/map_drag_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -39,23 +62,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
                 android:orientation="horizontal">
 
                 <TextView
+                    style="@style/MapBottomText"
                     android:id="@+id/mCatNam"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="난이도" />
+                    android:text="난이도 : 상" />
 
                 <TextView
-                    android:id="@+id/mDownMin"
+                    style="@style/MapBottomText"
+                    android:id="@+id/mSecLen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="하행속도" />
+                    android:text="구간거리" />
             </LinearLayout>
 
             <LinearLayout
@@ -64,15 +90,8 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/mSecLen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="구간거리" />
-
-
-                <TextView
+                    android:layout_marginTop="20dp"
+                    style="@style/MapBottomText"
                     android:id="@+id/mUpMin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -80,10 +99,23 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="상행속도" />
+
+                <TextView
+                    style="@style/MapBottomText"
+                    android:id="@+id/mDownMin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="하행속도 : 상" />
             </LinearLayout>
         </LinearLayout>
 
         <Button
+            sothree:layout_constraintStart_toStartOf="parent"
+            sothree:layout_constraintEnd_toEndOf="parent"
+            sothree:layout_constraintBottom_toBottomOf="parent"
+            sothree:layout_constraintTop_toBottomOf="@+id/ll_map_slidingpanel"
             android:id="@+id/start_navi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,6 +125,6 @@
             android:elevation="10dp"
             android:text="@string/start"
             android:textSize="25dp" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

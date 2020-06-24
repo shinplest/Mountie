@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,18 +36,18 @@ import com.shinplest.mobiletermproject.map.models.PathResponse;
 import com.shinplest.mobiletermproject.map.models.data.Feature;
 import com.shinplest.mobiletermproject.map.models.data.Properties;
 import com.shinplest.mobiletermproject.search.SearchMainActivity;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+
+import static com.naver.maps.map.CameraUpdate.REASON_LOCATION;
 
 
 public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback, MapFragmentView {
     private final String TAG = MapFragmentMain.class.getSimpleName();
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
-    private static final int NUMBER_OF_THREAD = 50;
     private FusedLocationSource locationSource;
     private NaverMap mNaverMap;
     public static ArrayList<ArrayList<LatLng>> allPaths;
@@ -58,11 +55,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private ArrayList<Feature> mFeature = null;
     public static List<LatLng> selectedPath;
     public static PathOverlay selectedPathOL;
+    private int changeReason;
     private Long mLastMapUpdateTime = 0L;
 
 
     Button startNavi;
-    LinearLayout pathInfoView;
     Button searchBtn;
     TextView mCatNam;
     TextView mDownMin;
@@ -70,9 +67,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     TextView mUpMin;
     MapService mapService;
     List<PathOverlay> pathOverlays;
-    NaverMap.OnLocationChangeListener locationChangeListener;
     LatLng target;
     PathOverlay previousOL;
+    SlidingUpPanelLayout sulMap;
 
     public MapFragmentMain() {
     }
@@ -101,12 +98,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         View view = inflater.inflate(R.layout.map_fragment_main, container, false);
         FragmentManager fm = getChildFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-        TextView catNam = view.findViewById(R.id.mCatNam);
-
-//        if (mapFragment == null) {
-//            mapFragment = MapFragment.newInstance();
-//            fm.beginTransaction().add(R.id.map, mapFragment).commit();
-//        }
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
@@ -128,12 +119,17 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             }
         });
 
-        pathInfoView = view.findViewById(R.id.pathInforView);
         mCatNam = view.findViewById(R.id.mCatNam);
         mDownMin = view.findViewById(R.id.mDownMin);
         mSecLen = view.findViewById(R.id.mSecLen);
         mUpMin = view.findViewById(R.id.mUpMin);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        sulMap = view.findViewById(R.id.sul_map);
     }
 
     @Override
@@ -184,13 +180,25 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mapService = new MapService(this);
         mNaverMap = naverMap;
 
-        naverMap.addOnCameraIdleListener(() -> {
-            CameraPosition cameraPosition = naverMap.getCameraPosition();
-            target = new LatLng(((cameraPosition.target.latitude - 0.05) + (cameraPosition.target.latitude + 0.05)) / 2, ((cameraPosition.target.longitude - 0.05) + (cameraPosition.target.longitude + 0.05)) / 2);
-            mapService.getPathData(cameraPosition.target.longitude - 0.05, cameraPosition.target.latitude - 0.05, cameraPosition.target.longitude + 0.05, cameraPosition.target.latitude + 0.05);
-            showCustomToast("카메라 움직임 종료");
+        naverMap.addOnCameraChangeListener((reason, animated) -> {
+            Log.i("NaverMap", "카메라 변경 - reson: " + reason + ", animated: " + animated);
+            changeReason = reason;
         });
 
+        naverMap.addOnCameraIdleListener(() -> {
+            //위치변화일경우 10초가 지났을때만 업데이트 되도록 변경
+            if (changeReason == REASON_LOCATION) {
+                if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
+                    CameraPosition cameraPosition = naverMap.getCameraPosition();
+                    target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+                    mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                } else {
+                }
+            }
+            CameraPosition cameraPosition = naverMap.getCameraPosition();
+            target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+            mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+        });
 
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
@@ -219,16 +227,26 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         selectedPathOL = (PathOverlay) overlay;
                         selectedPath = ((PathOverlay) overlay).getCoords();
                         getCheckOVColor();
-                        pathInfoView.setVisibility(View.VISIBLE);
-
-                        ///본인 위치 확인
-                        /*if (checkCurrentLocation()) {
-                            startNavi.setEnabled(true);
-                        } else {
-                            startNavi.setEnabled(false);
-                        }*/
+                        sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
 
 
+                        Log.d(TAG, pathOverlays.indexOf(overlay)+"");
+                        if(pathOverlays.indexOf(overlay)!= -1){
+                            Properties properties = allProperties.get(pathOverlays.indexOf(overlay));
+                            mCatNam.setText("난이도 : " + properties.getCatNam());
+                            mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
+                            mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
+                            mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
+                        }
+
+
+
+//                        ///본인 위치 확인
+//                        if (checkCurrentLocation()) {
+//                            startNavi.setEnabled(true);
+//                        } else {
+//                            startNavi.setEnabled(false);
+//                        }
                         return true;
                     }
                 });
@@ -264,7 +282,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     }
 
     public void getCheckOVColor() {
-        if (previousOL==null) {
+        if (previousOL == null) {
             selectedPathOL.setColor(Color.BLUE);
             previousOL = selectedPathOL;
         } else if (previousOL.equals(selectedPathOL)) {
@@ -298,7 +316,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         for (int i = 0; i < allPaths.size(); i++) {
 
             //selected path와 같은 애를 가지고 온 경우 걔는 따로 그리지 않음.
-            if(selectedPath!=null) {
+            if (selectedPath != null) {
                 if (allPaths.get(i).equals(selectedPath) == false) {
                     PathOverlay path = new PathOverlay();
                     path.setCoords(allPaths.get(i));
@@ -306,7 +324,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     path.setOutlineWidth(5);
                     paths.add(path);
                 }
-            }else{
+            } else {
                 PathOverlay path = new PathOverlay();
                 path.setCoords(allPaths.get(i));
                 path.setWidth(30);
