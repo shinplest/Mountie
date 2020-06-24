@@ -22,12 +22,13 @@ import com.shinplest.mobiletermproject.R;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
+
 
 public class RecordFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    public ArrayList<RecordItem> rList = new ArrayList<>();
 
     public RecordFragment() {
     }
@@ -39,7 +40,7 @@ public class RecordFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.record_rv);
 
-        RecordAdapter adapter = new RecordAdapter(rList);
+        RecordAdapter adapter = new RecordAdapter(recordItems);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -47,7 +48,9 @@ public class RecordFragment extends Fragment {
         //addItem(ContextCompat.getDrawable(getActivity(), R.drawable.map), "  기록1");
         updateRecord();
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.map);
-        addItem(bitmap, "text", "text", "text", "text", "text");
+
+        //수환님 recordItems 가 전역변수고, 앱이 켜질때마다 내부저장소에서 불러옵니다. 바로 recorditems로 리스트 사용하시면 됩니다
+        //addItem(bitmap, "text", "text", "text", "text", "text");
 
         return view;
     }
@@ -63,7 +66,7 @@ public class RecordFragment extends Fragment {
         item.setAvgSpeed(speed);
         item.setTotalDistance(distance);
 
-        rList.add(item);
+        recordItems.add(item);
     }
 
     //파일을 불러와 레코드에 보여주기
