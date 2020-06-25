@@ -16,4 +16,21 @@
     <string name="avgSpeed">평균 속도</string>
     <string name="maxAltitude">최고 고도</string>
     <string name="checkRecord">등산기록을 확인해보세요!</string>
+
+    <!-- fragment_statistics.xml -->
+    <string name="start_to_end" translatable="false">-</string>
+    <string name="result_txt_view">RESULT : </string>
+    <string name="period_txt_view">PERIOD : </string>
+
+    <!-- StatisticsFragment.java -->
+    <string name="unit_label">Done pomodoro units</string>
+    <string name="total_unit_label">Total pomodoro units</string>
+    <string name="invalid_period1">The period is invalid</string>
+    <string name="invalid_period2">The period should more than 1 day</string>
+    <string name="statisitcs_no_data">Select period what you want.</string>
+
+    <!-- arrays.xml : spinner items -->
+    <string name="arrays_week">WEEK</string>
+    <string name="arrays_month">MONTH</string>
+    <string name="arrays_custom">CUSTOM</string>
 </resources>
