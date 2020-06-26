@@ -68,29 +68,48 @@
             sothree:layout_constraintTop_toBottomOf="@+id/map_drag_line">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/mCatNam"
-                    style="@style/MapBottomText"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_attribute"
-                    android:gravity="center"
-                    android:text="난이도 : 상"
+                    android:elevation="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="10dp"
                     sothree:layout_constraintEnd_toEndOf="parent"
-                    sothree:layout_constraintHorizontal_bias="0.2"
+                    sothree:layout_constraintHorizontal_bias="0.01"
                     sothree:layout_constraintStart_toStartOf="parent"
-                    sothree:layout_constraintTop_toTopOf="parent" />
+                    sothree:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="20dp"
+                      />
+
+                    <TextView
+                        android:id="@+id/mCatNam"
+                        style="@style/MapBottomText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="난이도 : 상" />
+                </LinearLayout>
+
 
                 <Button
                     android:id="@+id/mSecLen"
                     style="@style/MapBottomText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:background="@drawable/shape_attribute"
                     android:gravity="center"
                     android:text="구간거리"
@@ -103,13 +122,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/mUpMin"
                     style="@style/MapBottomText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="fill"
                     android:layout_marginTop="20dp"
                     android:layout_weight="1"
@@ -120,8 +142,8 @@
                 <Button
                     android:id="@+id/mDownMin"
                     style="@style/MapBottomText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_weight="1"
                     android:background="@drawable/shape_attribute"
                     android:gravity="center"
@@ -131,6 +153,7 @@
 
         <Button
             android:id="@+id/start_navi"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -138,7 +161,7 @@
             android:background="@drawable/shape_circle"
             android:elevation="10dp"
             android:text="@string/start"
-            android:textSize="25dp"
+            android:textSize="20sp"
             sothree:layout_constraintBottom_toBottomOf="parent"
             sothree:layout_constraintEnd_toEndOf="parent"
             sothree:layout_constraintStart_toStartOf="parent"
