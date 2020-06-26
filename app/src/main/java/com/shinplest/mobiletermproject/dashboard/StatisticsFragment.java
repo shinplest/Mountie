@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +16,6 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -26,8 +26,11 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.shinplest.mobiletermproject.BaseFragment;
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.splash.SplashActivity;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class StatisticsFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
+public class StatisticsFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener {
 
     private Activity mStatisticsActivity;
     private Context mStatisticsContext;
@@ -52,45 +55,44 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
     // A month ago: Date -> String
     private String mAMonthAgoStr;
 
-    // ArrayList for units and total units in each days
-    private ArrayList<Integer> sumOfDayUnitArrayList;
     private ArrayList<Integer> sumOfDayTotalUnitArrayList;
 
     // Save date in selected period
-    private ArrayList<String> dateArrayList;
+    private ArrayList<String> dateArrayList = new ArrayList<>();
 
     // Accent color for drawing unit chart
     private String mColorAccentStr = "#FF5722";
     private int mColorAccentInt = Color.parseColor(mColorAccentStr);
 
     // Primary dark color for text
-    private String mColorDarkStr = "#616161";
+    private String mColorDarkStr = "#FAED7D";
     private int mColorDarkInt = Color.parseColor(mColorDarkStr);
 
     // Primary color for drawing total unit chart
     private String mColorStr = "#9E9E9E";
     private int mColorInt = Color.parseColor(mColorStr);
 
-    final static int MONTH_PERIOD = 2;
-    private int selectedPeriod = 0;
-
     ArrayList<String>sampleTime = new ArrayList<>();
+    ArrayList<String>sampleDate = new ArrayList<>();
     TextView totaltime;
-
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        // Set identifier
-        View mStatisticsView = inflater.inflate(R.layout.fragmet_statistics, container, false);
+
+        View mStatisticsView = inflater.inflate(R.layout.fragment_statistics, container, false);
         mStatisticsActivity = getActivity();
         mStatisticsContext = mStatisticsView.getContext();
-
-        // Get chart view
+        totaltime = mStatisticsView.findViewById(R.id.totalTime);
         mLineChart = mStatisticsView.findViewById(R.id.chart);
 
-        totaltime = mStatisticsView.findViewById(R.id.totalTime);
+        makeData();
+        calculateTime();
+
+        //monthly 그리기
+        drawMonthPeriodStatisticsChart();
+        // Get chart view
 
         return mStatisticsView;
     }
@@ -98,7 +100,7 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
     /**
@@ -107,14 +109,6 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
     private void addData() {
         // Unit data
         List<Entry> unitList = new ArrayList<>();
-
-        for (int i = 0; i < sumOfDayUnitArrayList.size(); i++) {
-            unitList.add(new Entry(i, sumOfDayUnitArrayList.get(i)));
-        }
-
-        // Units line data set
-        LineDataSet unitDataSet = new LineDataSet(unitList, getString(R.string.unit_label));
-        customLineDataSet(unitDataSet, mColorAccentInt);
 
         // Total unit data
         List<Entry> totalUnitEntries = new ArrayList<>();
@@ -151,7 +145,6 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
 
         // Consist line data sets
         LineData data = new LineData();
-        data.addDataSet(unitDataSet);
         data.addDataSet(totalUnitDataSet);
         data.notifyDataChanged();
 
@@ -171,6 +164,8 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         getToday();
         getAMonthAgo();
 
+        getPeriod(mAMonthAgoStr, mTodayStr);
+
         // Add data
         addData();
     }
@@ -184,16 +179,6 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
     }
 
     /**
-     * Get a week ago's date
-     */
-    void getAWeekAgo() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -6);
-        Date mAWeekAgoDate = calendar.getTime();
-        mAWeekAgoStr = mDateFormat.format(mAWeekAgoDate);
-    }
-
-    /**
      * Get a month ago's date
      */
     void getAMonthAgo() {
@@ -203,22 +188,15 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         mAMonthAgoStr = mDateFormat.format(mAMonthAgoDate);
     }
 
-    /**
-     * This function gets the date corresponding to the period.
-     *
-     * @param startDate start date
-     * @param endDate   ~ end date
-     */
-    void getPeriodFromSql(Date startDate, Date endDate) {
-        int itemUnit = 0;
+    void getPeriodFromSample(Date startDate, Date endDate) {
+
         int itemTotalUnit = 0;
-        sumOfDayUnitArrayList = new ArrayList<>();
         sumOfDayTotalUnitArrayList = new ArrayList<>();
-        int sumOfWholeUnits = 0;
         int sumOfWholeTotalUnits = 0;
 
         dateArrayList = new ArrayList<>();
         Date currentDate = startDate;
+
         while (currentDate.compareTo(endDate) <= 0) {
             dateArrayList.add(mDateFormat.format(currentDate));
             Calendar calendar = Calendar.getInstance();
@@ -226,40 +204,106 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
             calendar.add(Calendar.DAY_OF_MONTH, 1);
             currentDate = calendar.getTime();
         }
-/*
+
+        Log.d("check", "샹");
+        Log.d("check", String.valueOf(sampleDate.size()));
+        if(sampleDate.isEmpty())
+        {
+           Log.d("check","샹");
+            initializeChart();
+        }
         for (String date : dateArrayList) {
             String[] dateStr = {date};
-            
-            // Get each day's sum of unit/totalUnit
-            if (cursor.moveToFirst()) {
-                do {
-                    itemUnit += cursor.getInt(
-                            cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_UNIT));
 
-                    itemTotalUnit += cursor.getInt(
-                            cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TOTAL_UNIT));
-                } while (cursor.moveToNext());
+            for(int i = 0; i < sampleDate.size(); i++)
+            {
+
+                Log.d("check","날짜" + date);
+                Log.d("check","데이타" + sampleDate.get(i));
+                if(sampleDate.get(i).equals(date))
+                {
+                    itemTotalUnit += 1;
+                    Log.d("check","자고싶어요");
+                    Log.d("check", String.valueOf(itemTotalUnit));
+                }
+
             }
 
-
-            sumOfDayUnitArrayList.add(itemUnit);
             sumOfDayTotalUnitArrayList.add(itemTotalUnit);
-
-            // Re-initialize
-            itemUnit = 0;
             itemTotalUnit = 0;
-        }
-
-        // Sum units
-        for (int i : sumOfDayUnitArrayList) {
-            sumOfWholeUnits += i;
         }
 
         // Sum total units
         for (int i : sumOfDayTotalUnitArrayList) {
             sumOfWholeTotalUnits += i;
         }
-*/
+
+    }
+
+    void getTimeFromRecords()
+    {
+        int hour = 0;
+        int min = 0;
+
+        for(int i = 0; i < SplashActivity.recordItems.size(); i++)
+        {
+            String time = SplashActivity.recordItems.get(i).getTime();
+            String t[] = time.split(":");
+            hour = hour + Integer.parseInt(t[1]);
+            min = min + Integer.parseInt(t[2]);
+        }
+
+        if(min > 60)
+        {
+            hour = hour + (min / 60);
+            min = min % 60;
+        }
+
+        totaltime.setText(String.valueOf(hour) + ":" + String.valueOf(min));
+
+    }
+    void getPeriodFromRecords(Date startDate, Date endDate) {
+
+        int itemTotalUnit = 0;
+        sumOfDayTotalUnitArrayList = new ArrayList<>();
+        int sumOfWholeTotalUnits = 0;
+
+        dateArrayList = new ArrayList<>();
+        Date currentDate = startDate;
+
+        while (currentDate.compareTo(endDate) <= 0) {
+            dateArrayList.add(mDateFormat.format(currentDate));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            currentDate = calendar.getTime();
+        }
+
+        if(SplashActivity.recordItems.size() == 0)
+        {
+            initializeChart();
+        }
+        for (String date : dateArrayList) {
+            String[] dateStr = {date};
+
+            for(int i = 0; i < SplashActivity.recordItems.size(); i++)
+            {
+                if(date == mDateFormat.format(SplashActivity.recordItems.get(i).getDate()))
+                {
+                    itemTotalUnit += i;
+                }
+
+            }
+
+            sumOfDayTotalUnitArrayList.add(itemTotalUnit);
+            itemTotalUnit = 0;
+        }
+
+        // Sum total units
+        for (int i : sumOfDayTotalUnitArrayList) {
+            sumOfWholeTotalUnits += i;
+        }
+
     }
 
     /**
@@ -271,7 +315,7 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         lineDataSet.setLineWidth(2f);
         lineDataSet.setValueTextSize(0);
         lineDataSet.setCircleRadius(6f);
-        //lineDataSet.setCircleColorHole(Color.WHITE);
+        lineDataSet.setCircleColorHole(Color.WHITE);
         lineDataSet.setColor(color);
         lineDataSet.setCircleColor(color);
         lineDataSet.setHighLightColor(color);
@@ -341,37 +385,28 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         l.setDrawInside(false);
     }
 
+    void getPeriod(String start, String end) {
+        try {
+            getPeriodFromSample(mDateFormat.parse(start),mDateFormat.parse(end));
+            //getPeriodFromRecords(mDateFormat.parse(start), mDateFormat.parse(end));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
-    /**
-     * Initialize Chart view -> Empty chart
-     */
     void initializeChart() {
         mLineChart.setData(null);
         mLineChart.invalidate();
 
         Paint paint = mLineChart.getPaint(Chart.PAINT_INFO);
         paint.setTextSize(32f);
-        mLineChart.setNoDataText(getString(R.string.statisitcs_no_data));
-
-        totaltime = null;
-    }
-
-    void updateChartGraph() {
-        switch (selectedPeriod) {
-            case MONTH_PERIOD:
-                drawMonthPeriodStatisticsChart();
-                break;
-
-        }
-    }
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
+        mLineChart.setNoDataText("No data");
+        totaltime.setText("00:00");
     }
 
     //일단 임의로 데이터 만듭니당
-    public void makeData()
-    {
+    public void makeData(){
+
         sampleTime.add("1:00");
         sampleTime.add("3:35");
         sampleTime.add("2:00");
@@ -381,6 +416,12 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         sampleTime.add("1:20");
         sampleTime.add("4:00");
         sampleTime.add("3:30");
+        sampleDate.add("2020.06.23");
+        sampleDate.add("2020.06.23");
+        sampleDate.add("2020.06.23");
+        sampleDate.add("2020.06.21");
+        sampleDate.add("2020.06.19");
+        sampleDate.add("2020.05.30");
 
     }
     public void calculateTime()
@@ -402,5 +443,10 @@ public class StatisticsFragment extends Fragment implements DatePickerDialog.OnD
         }
 
         totaltime.setText(String.valueOf(hour) + ":" + String.valueOf(min));
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
     }
 }

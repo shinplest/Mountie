@@ -35,7 +35,7 @@
             android:gravity="center"
             android:paddingTop="10dp"
             android:text="00:00"
-            android:textColor="#B7F0B1"
+            android:textColor="@color/time"
             android:textSize="30dp" />
 
     </LinearLayout>

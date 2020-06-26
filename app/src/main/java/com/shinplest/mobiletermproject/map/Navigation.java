@@ -1,27 +1,28 @@
 package com.shinplest.mobiletermproject.map;
 
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.health.PackageHealthStats;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraUpdate;
@@ -29,15 +30,12 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
-import com.naver.maps.map.Projection;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.shinplest.mobiletermproject.R;
-import com.shinplest.mobiletermproject.map.models.data.Record;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 import com.shinplest.mobiletermproject.record.RecordItem;
-import com.shinplest.mobiletermproject.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,17 +43,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.shinplest.mobiletermproject.map.MapFragmentMain.allPaths;
-import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPath;
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
+import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 
 public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
+    private final String TAG = Navigation.class.getSimpleName();
+
     private PathOverlay pathOverlay;
     private List<LatLng> pathCoords;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
@@ -64,12 +63,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private List<LatLng> passed;
     private List<LatLng> goingTo;
     private double maxAltitude;
+
     private LinearLayout bottomSheet;
     private BottomSheetBehavior recordBottomSheet;
     private TextView distanceTV;
     private TextView altitudeTV;
     private TextView speedTV;
     private TextView timeTV;
+
+    private TextView stopwatch;
+    private Thread thread;
+    private timeHandler handler;
+    private int hour;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -86,6 +92,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_navigation);
@@ -106,7 +113,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         speedTV = findViewById(R.id.textSpeed);
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
+        stopwatch = findViewById(R.id.tv_timer);
 
+        handler = new timeHandler();
 
         //Record capture
         Button record = findViewById(R.id.record);
@@ -117,25 +126,35 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public boolean onLongClick(View v) {
                 float distance;
                 float avgSpeed;
-                float time;
+                int time;
                 double altitude;
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
 
-                Bundle bundle = new Bundle(1);
-                bundle.putString("newRecord", filename);
-                recordFragment.setArguments(bundle);
-
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
-                time = (float) 0.2;//수환님 스톱워치 time(hr)값 여기에 설정해주세요.
+                time = hour;//스톱워치 time(hr)값 설정.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+                Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
+
+                Bundle bundle = new Bundle(1);
+                bundle.putString("newRecord", filename);
+                bundle.putFloat("distance", distance);
+                bundle.putFloat("speed", avgSpeed);
+                bundle.putInt("time", time);
+                bundle.putDouble("altitude", altitude);
+                recordFragment.setArguments(bundle);
+
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                recordItems.add(hikingRecord);
+                saveToSP(recordItems);
+
                 return true;
             }
         });
@@ -146,10 +165,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             public void onClick(View v) {
                 if (record.getText().equals("기록")) {
                     record.setText("멈춤");
-                    //수환님 스톱워치 쓰레드 시작.
+                    //스톱워치 쓰레드 시작.
+                    thread = new timeThread();
+                    thread.start();
                 } else if (record.getText().equals("멈춤")) {
                     record.setText("기록");
-                    //수환님 스톱워치 쓰레드 멈춤.
+                    //스톱워치 쓰레드 멈춤.
+                    thread.interrupt();
                 }
 
             }
@@ -178,17 +200,20 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         hikingRecord.setTime(timeS);
         hikingRecord.setDate(new Date());
         //수환님 여기서 file이름 저장해주세욤
+        hikingRecord.setRecord_txt(filename);
         return hikingRecord;
     }
 
     //passed에 저장된 지나온 길을 다 더함.
     private float getAllPassedDistance() {
         float distance = 0;
-
-        for (int i = 0; i < passed.size() - 1; i++) {
-            distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
-        }
-        return distance;
+        if (passed != null) {
+            for (int i = 0; i < passed.size() - 1; i++) {
+                distance += distance_Between_LatLong(passed.get(i).latitude, passed.get(i).longitude, passed.get(i + 1).latitude, passed.get(i + 1).longitude);
+            }
+            return distance;
+        } else
+            return 0;
     }
 
     @Override
@@ -323,5 +348,47 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         }
 
         return filename;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //스톱워치 스레드
+    class timeThread extends Thread {
+        int i = 0;
+
+        public void run() {
+            while (true) {
+                Message msg = handler.obtainMessage();
+                msg.arg1 = i++;
+                handler.sendMessage(msg);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                    return;
+                }
+            }
+        }
+    }
+
+    public class timeHandler extends Handler {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            int sec = (msg.arg1 / 100) % 60;
+            int min = (msg.arg1 / 100) / 60;
+            hour = msg.arg1 / 360000;
+            String result = String.format("%02d:%02d:%02d", hour, min, sec);
+            stopwatch.setText(result);
+        }
+    }
+
+    private void saveToSP(ArrayList<RecordItem> recordItemList) {
+        Gson gson = new GsonBuilder().create();
+        Type listType = new TypeToken<ArrayList<RecordItem>>() {
+        }.getType();
+        String json = gson.toJson(recordItemList, listType);
+
+        SharedPreferences sp = getSharedPreferences("SharedPreference", MODE_PRIVATE);
+        sp.edit().putString("RecordItems", json).apply();
     }
 }
