@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:gravity="bottom"
+    sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="0dp"
     sothree:umanoShadowHeight="20dp">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -23,15 +24,22 @@
         <Button
             android:id="@+id/editSearchBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/shape_rounding"
+            android:drawableLeft="@drawable/custom_search"
+            android:drawablePadding="10dp"
             android:elevation="2dp"
             android:hint="@string/search"
-            android:textColor="@color/black" />
-    </FrameLayout>
+            android:paddingStart="20dp"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            sothree:layout_constraintHeight_percent="0.06"
+            sothree:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_slidingup_panel"
@@ -54,77 +62,110 @@
 
         <LinearLayout
             android:id="@+id/ll_map_slidingpanel"
-            sothree:layout_constraintTop_toBottomOf="@+id/map_drag_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            sothree:layout_constraintTop_toBottomOf="@+id/map_drag_line">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    style="@style/MapBottomText"
-                    android:id="@+id/mCatNam"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="난이도 : 상" />
+                    android:background="@drawable/shape_attribute"
+                    android:elevation="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="10dp"
+                    sothree:layout_constraintEnd_toEndOf="parent"
+                    sothree:layout_constraintHorizontal_bias="0.01"
+                    sothree:layout_constraintStart_toStartOf="parent"
+                    sothree:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    style="@style/MapBottomText"
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="20dp"
+                      />
+
+                    <TextView
+                        android:id="@+id/mCatNam"
+                        style="@style/MapBottomText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="난이도 : 상" />
+                </LinearLayout>
+
+
+                <Button
                     android:id="@+id/mSecLen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    style="@style/MapBottomText"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/shape_attribute"
                     android:gravity="center"
-                    android:text="구간거리" />
-            </LinearLayout>
+                    android:text="구간거리"
+                    sothree:layout_constraintEnd_toEndOf="parent"
+                    sothree:layout_constraintHorizontal_bias="0.8"
+                    sothree:layout_constraintStart_toStartOf="parent"
+                    sothree:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_marginTop="20dp"
-                    style="@style/MapBottomText"
+                <Button
                     android:id="@+id/mUpMin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MapBottomText"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="fill"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
+                    android:background="@drawable/shape_attribute"
                     android:gravity="center"
                     android:text="상행속도" />
 
-                <TextView
-                    style="@style/MapBottomText"
+                <Button
                     android:id="@+id/mDownMin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/MapBottomText"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_weight="1"
+                    android:background="@drawable/shape_attribute"
                     android:gravity="center"
                     android:text="하행속도 : 상" />
             </LinearLayout>
         </LinearLayout>
 
         <Button
-            sothree:layout_constraintStart_toStartOf="parent"
-            sothree:layout_constraintEnd_toEndOf="parent"
-            sothree:layout_constraintBottom_toBottomOf="parent"
-            sothree:layout_constraintTop_toBottomOf="@+id/ll_map_slidingpanel"
             android:id="@+id/start_navi"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="30dp"
             android:background="@drawable/shape_circle"
             android:elevation="10dp"
             android:text="@string/start"
-            android:textSize="25dp" />
+            android:textSize="20sp"
+            sothree:layout_constraintBottom_toBottomOf="parent"
+            sothree:layout_constraintEnd_toEndOf="parent"
+            sothree:layout_constraintStart_toStartOf="parent"
+            sothree:layout_constraintTop_toBottomOf="@+id/ll_map_slidingpanel" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
