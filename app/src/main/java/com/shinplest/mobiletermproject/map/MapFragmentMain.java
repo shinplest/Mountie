@@ -71,10 +71,11 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     TextView mUpMin;
     MapService mapService;
     List<PathOverlay> pathOverlays;
-    List<PathOverlay> previousPathOL;
     LatLng target;
     PathOverlay previousOL;
     SlidingUpPanelLayout sulMap;
+    int selected;
+    int base;
 
     public MapFragmentMain() {
     }
@@ -128,6 +129,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mDownMin = view.findViewById(R.id.mDownMin);
         mSecLen = view.findViewById(R.id.mSecLen);
         mUpMin = view.findViewById(R.id.mUpMin);
+
+        selected = Color.rgb(163, 222, 213);
+        base = Color.rgb(106, 165, 169);
         return view;
     }
 
@@ -160,8 +164,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
     //오버레이가 있을 때 setMap(null)코드에는 분명히 들어가는데, map에서 안사라짐.
     public void removeOverLay() {
-        if (previousPathOL != null) {
-            for (PathOverlay pathOverlay : previousPathOL) {
+        if (pathOverlays != null) {
+            for (PathOverlay pathOverlay : pathOverlays) {
                 pathOverlay.setMap(null);
             }
         } else {
@@ -171,12 +175,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 
 
     public void changeMapLocation(Double x1, Double y1, Double x2, Double y2) {
-
+        removeOverLay();
         target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
         mapService.getPathData(x1, y1, x2, y2);
         CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target, 12))
                 .animate(CameraAnimation.Easing);
-        removeOverLay();
+
         mNaverMap.moveCamera(cameraUpdate);
 
     }
@@ -238,7 +242,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         cameraPosition = mNaverMap.getCameraPosition();
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
         makeCoodList();
-        previousPathOL = pathOverlays;
         //길 그려주는 부분
         if (allPaths != null) {
             Log.d(TAG, "all path size" + allPaths.size());
@@ -264,7 +267,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                             mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
                             mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
                         }
-
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
@@ -312,13 +314,13 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     // 오버레이 같은걸 눌러도 서로 다른 id를 갖는걸 보면, 다시 오버레이가 들어와서 오버레이 id도 바뀌는 듯..?
     public void getCheckOVColor() {
         if (previousOL == null) {
-            selectedPathOL.setColor(Color.BLUE);
+            selectedPathOL.setColor(selected);
             previousOL = selectedPathOL;
         } else if (previousOL.getCoords().equals(selectedPathOL.getCoords())) {
             previousOL = selectedPathOL;
         } else if (previousOL.getCoords().equals(selectedPathOL.getCoords()) == false) {
-            previousOL.setColor(Color.WHITE);
-            selectedPathOL.setColor(Color.BLUE);
+            previousOL.setColor(base);
+            selectedPathOL.setColor(selected);
             previousOL = selectedPathOL;
         }
     }
@@ -349,15 +351,19 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                 if (allPaths.get(i).equals(selectedPath) == false) {
                     PathOverlay path = new PathOverlay();
                     path.setCoords(allPaths.get(i));
-                    path.setWidth(30);
-                    path.setOutlineWidth(5);
+                    path.setColor(base);
+                    path.setWidth(15);
+                    path.setOutlineWidth(40);
+                    path.setOutlineColor(Color.TRANSPARENT);
                     paths.add(path);
                 }
             } else {
                 PathOverlay path = new PathOverlay();
                 path.setCoords(allPaths.get(i));
-                path.setWidth(30);
-                path.setOutlineWidth(5);
+                path.setColor(base);
+                path.setWidth(15);
+                path.setOutlineWidth(40);
+                path.setOutlineColor(Color.TRANSPARENT);
                 paths.add(path);
             }
         }
