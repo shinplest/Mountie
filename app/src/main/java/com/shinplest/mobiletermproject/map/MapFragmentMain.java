@@ -100,7 +100,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.map_fragment_main, container, false);
         FragmentManager fm = getChildFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
@@ -136,6 +135,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sulMap = view.findViewById(R.id.sul_map);
+        sulMap.setFadeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sulMap.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            }
+        });
     }
 
     @Override
@@ -204,18 +209,18 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             } else {
                 //일정 범위 이상 움직였을때만 맵 업데이트
                 if (System.currentTimeMillis() - mLastMapUpdateTime >= 2000) {
-                if (cameraPosition != null) {
-                    latlanDistance = calculateDistanceDiff();
-                    Log.d(TAG, "diff : " + calculateDistanceDiff());
-                }
-                if (latlanDistance != null && latlanDistance < 0.02) {
-                    //조금 움직였으면 아무것도 안함
-                } else {
-                    Log.d(TAG, "맵 업데이트 실행");
-                    CameraPosition cameraPosition = naverMap.getCameraPosition();
-                    target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
-                    mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
-                }
+                    if (cameraPosition != null) {
+                        latlanDistance = calculateDistanceDiff();
+                        Log.d(TAG, "diff : " + calculateDistanceDiff());
+                    }
+                    if (latlanDistance != null && latlanDistance < 0.02) {
+                        //조금 움직였으면 아무것도 안함
+                    } else {
+                        Log.d(TAG, "맵 업데이트 실행");
+                        CameraPosition cameraPosition = naverMap.getCameraPosition();
+                        target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+                        mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                    }
                 } else {
                 }
             }
