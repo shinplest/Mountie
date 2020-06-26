@@ -11,7 +11,7 @@
     sothree:umanoPanelHeight="0dp"
     sothree:umanoShadowHeight="20dp">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,20 +24,22 @@
         <Button
             android:id="@+id/editSearchBar"
             android:layout_width="match_parent"
-            android:layout_height="37.7dp"
+            android:layout_height="0dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
-            android:drawableLeft="@drawable/custom_search"
-            android:paddingStart="20dp"
-            android:drawablePadding="10dp"
-            android:textAlignment="textStart"
             android:background="@drawable/shape_rounding"
+            android:drawableLeft="@drawable/custom_search"
+            android:drawablePadding="10dp"
             android:elevation="2dp"
             android:hint="@string/search"
-            android:textColor="@color/black" />
+            android:paddingStart="20dp"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            sothree:layout_constraintHeight_percent="0.06"
+            sothree:layout_constraintTop_toTopOf="parent" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_slidingup_panel"
@@ -93,8 +95,8 @@
                     android:gravity="center"
                     android:text="구간거리"
                     sothree:layout_constraintEnd_toEndOf="parent"
-                    sothree:layout_constraintStart_toStartOf="parent"
                     sothree:layout_constraintHorizontal_bias="0.8"
+                    sothree:layout_constraintStart_toStartOf="parent"
                     sothree:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
