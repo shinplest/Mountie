@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +61,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private CameraPosition cameraPosition = null;
     private Double latlanDistance = null;
 
+    int selected;
+    int base;
 
     Button startNavi;
     Button searchBtn;
@@ -70,12 +71,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     TextView mSecLen;
     TextView mUpMin;
     MapService mapService;
-    List<PathOverlay> pathOverlays;
     LatLng target;
     PathOverlay previousOL;
     SlidingUpPanelLayout sulMap;
-    int selected;
-    int base;
 
     public MapFragmentMain() {
     }
@@ -83,6 +81,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        selected = Color.rgb(163, 222, 213);
+        base = Color.rgb(106, 165, 169);
     }
 
     @Override
@@ -129,9 +129,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         mDownMin = view.findViewById(R.id.mDownMin);
         mSecLen = view.findViewById(R.id.mSecLen);
         mUpMin = view.findViewById(R.id.mUpMin);
-
-        selected = Color.rgb(163, 222, 213);
-        base = Color.rgb(106, 165, 169);
         return view;
     }
 
@@ -162,25 +159,24 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
     }
 
-    //오버레이가 있을 때 setMap(null)코드에는 분명히 들어가는데, map에서 안사라짐.
-    public void removeOverLay() {
-        if (pathOverlays != null) {
-            for (PathOverlay pathOverlay : pathOverlays) {
-                pathOverlay.setMap(null);
-            }
-        } else {
-            Log.d("removeOverLay", "지울 오버레이가 없어요");
-        }
-    }
+//    public void removeOverLay() {
+//        if (allPaths != null && allPaths.size() != 0) {
+//            for (int i = 0; i < allPaths.size(); i++) {
+//                pathOverlays.get(i).setMap(null);
+//            }
+//        } else {
+//            Log.d("removeOverLay", "지울 오버레이가 없어요");
+//        }
+//
+//    }
 
 
     public void changeMapLocation(Double x1, Double y1, Double x2, Double y2) {
-        removeOverLay();
+        //removeOverLay();
         target = new LatLng((y1 + y2) / 2, (x1 + x2) / 2);
         mapService.getPathData(x1, y1, x2, y2);
         CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(target, 12))
                 .animate(CameraAnimation.Easing);
-
         mNaverMap.moveCamera(cameraUpdate);
 
     }
@@ -200,26 +196,29 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             //위치변화일경우 10초가 지났을때만 업데이트 되도록 변경
             if (changeReason == REASON_LOCATION) {
                 if (System.currentTimeMillis() - mLastMapUpdateTime >= 10000) {
-                    mapServicePathData(naverMap);
-                } else {
-                }
-            } else {
-
-                //일정 범위 이상 움직였을때만 맵 업데이트
-                if (cameraPosition != null) {
-                    latlanDistance = calculateDistanceDiff();
-                    Log.d(TAG, "diff : " + calculateDistanceDiff());
-                }
-                if (latlanDistance != null && latlanDistance < 0.02) {
-                    //조금 움직였으면 아무것도 안함
-                } else {
-                    Log.d(TAG, "맵 업데이트 실행");
                     CameraPosition cameraPosition = naverMap.getCameraPosition();
                     target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
                     mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                } else {
+                }
+            } else {
+                //일정 범위 이상 움직였을때만 맵 업데이트
+                if (System.currentTimeMillis() - mLastMapUpdateTime >= 2000) {
+                    if (cameraPosition != null) {
+                        latlanDistance = calculateDistanceDiff();
+                        Log.d(TAG, "diff : " + calculateDistanceDiff());
+                    }
+                    if (latlanDistance != null && latlanDistance < 0.02) {
+                        //조금 움직였으면 아무것도 안함
+                    } else {
+                        Log.d(TAG, "맵 업데이트 실행");
+                        CameraPosition cameraPosition = naverMap.getCameraPosition();
+                        target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+                        mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                    }
+                } else {
                 }
             }
-
         });
 
         naverMap.setLocationSource(locationSource);
@@ -229,12 +228,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_MOUNTAIN, true);
     }
 
-    private void mapServicePathData(NaverMap naverMap) {
-        CameraPosition cameraPosition = naverMap.getCameraPosition();
-        target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
-        mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
-    }
-
 
     //등산로 가져오기 성공했을때
     @Override
@@ -242,31 +235,33 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         cameraPosition = mNaverMap.getCameraPosition();
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
         makeCoodList();
+
         //길 그려주는 부분
         if (allPaths != null) {
             Log.d(TAG, "all path size" + allPaths.size());
-            pathOverlays = getPathsOverLayList();
-            //마커와 등산로 맵에 표시
-            for (int i = 0; i < pathOverlays.size(); i++) {
+            List<PathOverlay> paths = new ArrayList<>();
+            for (int i = 0; i < allPaths.size(); i++) {
+                PathOverlay path = new PathOverlay();
+                path.setCoords(allPaths.get(i));
+                path.setColor(base);
+                path.setWidth(15);
+                path.setOutlineWidth(40);
+                path.setOutlineColor(Color.TRANSPARENT);
+                paths.add(path);
 
-                pathOverlays.get(i).setMap(mNaverMap);
-                pathOverlays.get(i).setOnClickListener(new Overlay.OnClickListener() {
+                path.setOnClickListener(new Overlay.OnClickListener() {
                     @Override
                     public boolean onClick(@NonNull Overlay overlay) {
                         selectedPathOL = (PathOverlay) overlay;
                         selectedPath = ((PathOverlay) overlay).getCoords();
                         getCheckOVColor();
                         sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-
-
-                        Log.d(TAG, pathOverlays.indexOf(overlay) + "");
-                        if (pathOverlays.indexOf(overlay) != -1) {
-                            Properties properties = allProperties.get(pathOverlays.indexOf(overlay));
-                            mCatNam.setText("난이도 : " + properties.getCatNam());
-                            mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
-                            mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
-                            mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
-                        }
+                        Log.d(TAG, "i : " + paths.indexOf(overlay));
+                        Properties properties = allProperties.get(paths.indexOf(overlay));
+                        mCatNam.setText("난이도 : " + properties.getCatNam());
+                        mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
+                        mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
+                        mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
@@ -274,17 +269,16 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
 //                        } else {
 //                            startNavi.setEnabled(false);
 //                        }
-                            return true;
-                        }
-                    });
+                        return true;
+                    }
+                });
+                path.setMap(mNaverMap);
             }
-
-
-
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
         }
     }
+
 
     @Override
     public void getPathdataFailure() {
@@ -310,8 +304,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         }
     }
 
-    // 오버레이를 클릭해서 다시 가져오면서 오버레이가 있어야하는 인덱스에 없기도하고,
-    // 오버레이 같은걸 눌러도 서로 다른 id를 갖는걸 보면, 다시 오버레이가 들어와서 오버레이 id도 바뀌는 듯..?
     public void getCheckOVColor() {
         if (previousOL == null) {
             selectedPathOL.setColor(selected);
@@ -339,35 +331,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         LatLngBounds SPbounds = start.getBounds();
         LatLngBounds EPbounds = end.getBounds();
         return SPbounds.contains(current) || EPbounds.contains(current);
-    }
-
-
-    private List<PathOverlay> getPathsOverLayList() {
-        List<PathOverlay> paths = new ArrayList<>();
-
-        for (int i = 0; i < allPaths.size(); i++) {
-
-            if (selectedPath != null) {
-                if (allPaths.get(i).equals(selectedPath) == false) {
-                    PathOverlay path = new PathOverlay();
-                    path.setCoords(allPaths.get(i));
-                    path.setColor(base);
-                    path.setWidth(15);
-                    path.setOutlineWidth(40);
-                    path.setOutlineColor(Color.TRANSPARENT);
-                    paths.add(path);
-                }
-            } else {
-                PathOverlay path = new PathOverlay();
-                path.setCoords(allPaths.get(i));
-                path.setColor(base);
-                path.setWidth(15);
-                path.setOutlineWidth(40);
-                path.setOutlineColor(Color.TRANSPARENT);
-                paths.add(path);
-            }
-        }
-        return paths;
     }
 
     private double calculateDistanceDiff() {
