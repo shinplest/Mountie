@@ -58,6 +58,9 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     private int changeReason;
     private Long mLastMapUpdateTime = 0L;
 
+    private CameraPosition cameraPosition = null;
+    private Double latlanDistance = null;
+
 
     Button startNavi;
     Button searchBtn;
@@ -179,6 +182,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public void onMapReady(@NonNull NaverMap naverMap) {
         mapService = new MapService(this);
         mNaverMap = naverMap;
+        cameraPosition = naverMap.getCameraPosition();
 
         naverMap.addOnCameraChangeListener((reason, animated) -> {
             Log.i("NaverMap", "카메라 변경 - reson: " + reason + ", animated: " + animated);
@@ -194,10 +198,21 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
                 } else {
                 }
+            } else {
+                //일정 범위 이상 움직였을때만 맵 업데이트
+                if (cameraPosition != null) {
+                    latlanDistance = calculateDistanceDiff();
+                    Log.d(TAG, "diff : " + calculateDistanceDiff());
+                }
+                if (latlanDistance != null && latlanDistance < 0.02) {
+                    //조금 움직였으면 아무것도 안함
+                } else {
+                    Log.d(TAG, "맵 업데이트 실행");
+                    CameraPosition cameraPosition = naverMap.getCameraPosition();
+                    target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
+                    mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
+                }
             }
-            CameraPosition cameraPosition = naverMap.getCameraPosition();
-            target = new LatLng(((cameraPosition.target.latitude - 0.01) + (cameraPosition.target.latitude + 0.01)) / 2, ((cameraPosition.target.longitude - 0.01) + (cameraPosition.target.longitude + 0.01)) / 2);
-            mapService.getPathData(cameraPosition.target.longitude - 0.02, cameraPosition.target.latitude - 0.01, cameraPosition.target.longitude + 0.02, cameraPosition.target.latitude + 0.01);
         });
 
         naverMap.setLocationSource(locationSource);
@@ -211,6 +226,7 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     //등산로 가져오기 성공했을때
     @Override
     public void getPathdataSuccess(PathResponse pathResponse) {
+        cameraPosition = mNaverMap.getCameraPosition();
         mFeature = (ArrayList<Feature>) pathResponse.getResponse().getResult().getFeatureCollection().getFeatures();
         makeCoodList();
 
@@ -230,16 +246,14 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
 
 
-                        Log.d(TAG, pathOverlays.indexOf(overlay)+"");
-                        if(pathOverlays.indexOf(overlay)!= -1){
+                        Log.d(TAG, pathOverlays.indexOf(overlay) + "");
+                        if (pathOverlays.indexOf(overlay) != -1) {
                             Properties properties = allProperties.get(pathOverlays.indexOf(overlay));
                             mCatNam.setText("난이도 : " + properties.getCatNam());
                             mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
                             mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
                             mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
                         }
-
-
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
@@ -251,6 +265,8 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                     }
                 });
             }
+
+
 
         } else {
             showCustomToast("정보를 가져왔으나 맵이 준비될때 보여주지 않았습니다!");
@@ -333,5 +349,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
             }
         }
         return paths;
+    }
+
+    private double calculateDistanceDiff() {
+        double latDiff = cameraPosition.target.latitude - mNaverMap.getCameraPosition().target.latitude;
+        double longDiff = cameraPosition.target.longitude - mNaverMap.getCameraPosition().target.longitude;
+
+        return Math.sqrt(latDiff * latDiff + longDiff * longDiff);
     }
 }
