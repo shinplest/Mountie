@@ -24,14 +24,19 @@
         <Button
             android:id="@+id/editSearchBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="37.7dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
+            android:drawableLeft="@drawable/custom_search"
+            android:paddingStart="20dp"
+            android:drawablePadding="10dp"
+            android:textAlignment="textStart"
             android:background="@drawable/shape_rounding"
             android:elevation="2dp"
             android:hint="@string/search"
             android:textColor="@color/black" />
+
     </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
