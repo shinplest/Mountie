@@ -16,4 +16,5 @@
     <string name="avgSpeed">평균 속도</string>
     <string name="maxAltitude">최고 고도</string>
     <string name="checkRecord">등산기록을 확인해보세요!</string>
+    <string name="searchMT">산 검색</string>
 </resources>
