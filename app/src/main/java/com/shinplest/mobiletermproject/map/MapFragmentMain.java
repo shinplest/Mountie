@@ -100,7 +100,6 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.map_fragment_main, container, false);
         FragmentManager fm = getChildFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
@@ -136,6 +135,12 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sulMap = view.findViewById(R.id.sul_map);
+        sulMap.setFadeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sulMap.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            }
+        });
     }
 
     @Override

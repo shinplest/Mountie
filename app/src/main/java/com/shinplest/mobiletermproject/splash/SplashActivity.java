@@ -48,7 +48,7 @@ public class SplashActivity extends BaseActivity {
                 finish();
             }
         };
-        new Timer().schedule(timerTask, 1500);
+        new Timer().schedule(timerTask, 1000);
     }
 }
 
