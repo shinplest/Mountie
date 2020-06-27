@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.shinplest.mobiletermproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!--TODO: 저장소 접근권한 설정-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".ApplicationClass"
@@ -18,13 +19,12 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".map.Navigation"></activity>
+        android:theme="@style/AppTheme"
+        tools:targetApi="n">
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="rkw0i1yb4c" />
-
         <activity
             android:name=".splash.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -34,8 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".map.Navigation"
+            android:theme="@style/Transparent" />
         <activity android:name=".main.MainActivity" />
-        <activity android:name=".record.RecordAdapter" />
         <activity android:name=".search.SearchMainActivity" />
     </application>
 
