@@ -366,12 +366,6 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         // if disabled, scaling can be done on x- and y-axis separately
         mLineChart.setPinchZoom(false);
 
-        // create a custom MarkerView (extend MarkerView) and specify the layout
-        // to use for it
-        MyMarkerView mv = new MyMarkerView(mStatisticsContext, R.layout.custom_marker_view);
-        mv.setChartView(mLineChart); // For bounds control
-        mLineChart.setMarker(mv); // Set the marker to the chart
-
         // Show dynamic animation
         mLineChart.animateXY(2000, 2000);
 
