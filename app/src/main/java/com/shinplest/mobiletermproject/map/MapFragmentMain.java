@@ -335,8 +335,16 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
         end.setRadius(100);
         LatLngBounds SPbounds = start.getBounds();
         LatLngBounds EPbounds = end.getBounds();
-        return SPbounds.contains(current) || EPbounds.contains(current);
+
+        if (SPbounds.contains(current)) return true; //시작지점일경우 okay
+        else if (EPbounds.contains(current)) {
+            showCustomToast("하산을 시작점으로 잡을 수 없습니다:) ");
+            return false; //시작지점이 아닐경우 enable no
+        }
+        showCustomToast("등산로 시작 근처로 가세요!");
+        return false;
     }
+
 
     private double calculateDistanceDiff() {
         double latDiff = cameraPosition.target.latitude - mNaverMap.getCameraPosition().target.latitude;
