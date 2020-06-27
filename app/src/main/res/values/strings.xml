@@ -28,4 +28,12 @@
     <string name="arrays_custom">CUSTOM</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="searchMT">산 검색</string>
+
+    <!-- fragment_statistics.xml -->
+    <string name="Mountie">마운티에서</string>
+    <string name="total">총</string>
+    <string name="timeInit">00:00</string>
+    <string name="walk">걸었습니다</string>
+
 </resources>

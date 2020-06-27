@@ -8,8 +8,6 @@ import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.github.mikephil.charting.utils.Utils;
-import com.shinplest.mobiletermproject.R;
 
 public class MyMarkerView extends MarkerView {
 
@@ -18,7 +16,6 @@ public class MyMarkerView extends MarkerView {
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
 
-        tvContent = findViewById(R.id.tvContent);
     }
 
     // callbacks every time the MarkerView is redrawn, can be used to update the
@@ -30,10 +27,10 @@ public class MyMarkerView extends MarkerView {
 
             CandleEntry ce = (CandleEntry) e;
 
-            tvContent.setText(Utils.formatNumber(ce.getHigh(), 0, true));
+            //tvContent.setText(Utils.formatNumber(ce.getHigh(), 0, true));
         } else {
 
-            tvContent.setText(Utils.formatNumber(e.getY(), 0, true));
+            //tvContent.setText(Utils.formatNumber(e.getY(), 0, true));
         }
 
         super.refreshContent(e, highlight);

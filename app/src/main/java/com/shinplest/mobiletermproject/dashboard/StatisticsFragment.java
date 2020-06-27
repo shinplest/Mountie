@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,7 +64,7 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
     private int mColorAccentInt = Color.parseColor(mColorAccentStr);
 
     // Primary dark color for text
-    private String mColorDarkStr = "#FAED7D";
+    private String mColorDarkStr = "#6AA5A9";
     private int mColorDarkInt = Color.parseColor(mColorDarkStr);
 
     // Primary color for drawing total unit chart
@@ -91,7 +90,7 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         calculateTime();
 
         //monthly 그리기
-        drawMonthPeriodStatisticsChart();
+        drawPeriodStatisticsChart();
         // Get chart view
 
         return mStatisticsView;
@@ -159,12 +158,12 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         super.onCreateOptionsMenu(menu, menuInflater);
     }
 
-    private void drawMonthPeriodStatisticsChart() {
+    private void drawPeriodStatisticsChart() {
         // Get Date
         getToday();
-        getAMonthAgo();
+        getAWeekAgo();
 
-        getPeriod(mAMonthAgoStr, mTodayStr);
+        getPeriod(mAWeekAgoStr, mTodayStr);
 
         // Add data
         addData();
@@ -188,6 +187,13 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         mAMonthAgoStr = mDateFormat.format(mAMonthAgoDate);
     }
 
+    void getAWeekAgo() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -6);
+        Date mAWeekAgoDate = calendar.getTime();
+        mAWeekAgoStr = mDateFormat.format(mAWeekAgoDate);
+    }
+
     void getPeriodFromSample(Date startDate, Date endDate) {
 
         int itemTotalUnit = 0;
@@ -205,11 +211,9 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
             currentDate = calendar.getTime();
         }
 
-        Log.d("check", "샹");
-        Log.d("check", String.valueOf(sampleDate.size()));
         if(sampleDate.isEmpty())
         {
-           Log.d("check","샹");
+
             initializeChart();
         }
         for (String date : dateArrayList) {
@@ -218,13 +222,9 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
             for(int i = 0; i < sampleDate.size(); i++)
             {
 
-                Log.d("check","날짜" + date);
-                Log.d("check","데이타" + sampleDate.get(i));
                 if(sampleDate.get(i).equals(date))
                 {
                     itemTotalUnit += 1;
-                    Log.d("check","자고싶어요");
-                    Log.d("check", String.valueOf(itemTotalUnit));
                 }
 
             }
@@ -341,15 +341,15 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         mLineChart.getAxisRight().setEnabled(false);
 
         // X - Axis
-        mLineChart.getXAxis().setYOffset(15f);
+        mLineChart.getXAxis().setYOffset(10f);
         mLineChart.getXAxis().setTextSize(11f);
-        mLineChart.getXAxis().setTextColor(mColorAccentInt);
+        mLineChart.getXAxis().setTextColor(Color.BLACK);
         mLineChart.getXAxis().setDrawAxisLine(false);
         mLineChart.getXAxis().setDrawGridLines(false);
 
         // Y - left - Axis
-        mLineChart.getAxisLeft().setXOffset(15f);
-        mLineChart.getAxisLeft().setTextSize(14f);
+        mLineChart.getAxisLeft().setXOffset(10f);
+        mLineChart.getAxisLeft().setTextSize(10f);
         mLineChart.getAxisLeft().setGranularity(1f);
         mLineChart.getAxisLeft().setAxisMinimum(0);
         mLineChart.getAxisLeft().setTextColor(mColorInt);
@@ -416,7 +416,7 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         sampleTime.add("1:20");
         sampleTime.add("4:00");
         sampleTime.add("3:30");
-        sampleDate.add("2020.06.23");
+        sampleDate.add("2020.06.26");
         sampleDate.add("2020.06.23");
         sampleDate.add("2020.06.23");
         sampleDate.add("2020.06.21");
@@ -442,7 +442,7 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
             min = min % 60;
         }
 
-        totaltime.setText(String.valueOf(hour) + ":" + String.valueOf(min));
+        totaltime.setText(String.valueOf(hour) + "시간" + String.valueOf(min) + "분");
     }
 
     @Override
