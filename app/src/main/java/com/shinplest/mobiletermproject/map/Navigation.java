@@ -113,9 +113,9 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         distanceTV.setText(distanceS + "km");
 
         RecordItem hikingRecord = new RecordItem();
-        File file = getFileStreamPath(filename);
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-        hikingRecord.setRecord_img(bitmap);
+//        File file = getFileStreamPath(filename);
+//        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//        hikingRecord.setRecord_img(bitmap);
 
         hikingRecord.setAvgSpeed(avgSpeedS);
         hikingRecord.setMaxAltitude(altitudeS);
@@ -193,19 +193,17 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                     }
 
 
-
-
                 }
 
                 pathCoords.add(closestIdx + 1, currentPos);
                 for (int i = 0; i < pathCoords.size(); i++) {
-                    if (i <= closestIdx+1) passed.add(pathCoords.get(i));
+                    if (i <= closestIdx + 1) passed.add(pathCoords.get(i));
                     if (i > closestIdx) goingTo.add(pathCoords.get(i));
 
                 }
 
                 if (passed.size() >= 2) {
-                    if(goingTo.size()<2){
+                    if (goingTo.size() < 2) {
                         passedOverLay.setCoords(passed);
                         showCustomToast("등산로를 모두 지나왔습니다!");
                         passedOverLay.setMap(naverMap);
@@ -268,6 +266,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         //Record capture
         CoordinatorLayout navigationView = findViewById(R.id.navigation);
+        View naviView = findViewById(R.id.naviMap);
         //longClick ==> 기록 끝내기
         btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -280,6 +279,12 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
+
+                //파일이름 번들로 보내주기
+//                Bundle bundle = new Bundle();
+//                bundle.putString("filename", filename);
+//                recordFragment.setArguments(bundle);
+
                 //길게 끝내면 쓰레드 일시정지
                 thread.interrupt();
                 btnRecord.setVisibility(View.GONE);
@@ -292,19 +297,14 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
                 Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
 
-                Bundle bundle = new Bundle(1);
-                bundle.putString("newRecord", filename);
-                bundle.putFloat("distance", distance);
-                bundle.putFloat("speed", avgSpeed);
-                bundle.putInt("time", time);
-                bundle.putDouble("altitude", altitude);
-                recordFragment.setArguments(bundle);
-
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
 
                 recordItems.add(hikingRecord);
                 saveToSP(recordItems);
+                File file = getFileStreamPath(filename);
+                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
+                hikingRecord.setRecord_img(bitmapFromFile);
 
                 return true;
             }
@@ -337,9 +337,9 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         Canvas canvas = new Canvas(bitmap);
 
         Drawable background = view.getBackground();
-        if(background!=null){
+        if (background != null) {
             background.draw(canvas);
-        }else{
+        } else {
             canvas.drawColor(Color.WHITE);
         }
         view.draw(canvas);
