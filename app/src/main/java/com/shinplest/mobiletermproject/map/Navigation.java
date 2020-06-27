@@ -78,6 +78,9 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
     private Button btnRecord;
 
+    int colorGoingTo;
+    int colorPassed;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -98,7 +101,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         setContentView(R.layout.activity_navigation);
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
-
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
@@ -114,6 +116,10 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         distanceTV = findViewById(R.id.textDistance);
         stopwatch = findViewById(R.id.tv_timer);
         btnRecord = findViewById(R.id.record);
+
+        colorGoingTo = Color.rgb(163, 222, 213);
+        colorPassed = Color.GRAY;
+
 
         handler = new timeHandler();
 
@@ -219,10 +225,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         maxAltitude = 0;
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
-        pathOverlay.setMap(naverMap);
-        pathOverlay.setProgress(0);
-        pathOverlay.setColor(Color.BLUE);
-        pathOverlay.setPassedColor(Color.GRAY);
         LocationOverlay locationOverlay = naverMap.getLocationOverlay();
         locationOverlay.setPosition(pathCoords.get(0));
 
@@ -230,8 +232,12 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         PathOverlay passedOverLay = new PathOverlay();
         PathOverlay goingToOverLay = new PathOverlay();
-        passedOverLay.setColor(Color.GRAY);
-        goingToOverLay.setColor(Color.BLUE);
+        passedOverLay.setOutlineColor(Color.TRANSPARENT);
+        goingToOverLay.setOutlineColor(Color.TRANSPARENT);
+        goingToOverLay.setWidth(15);
+        passedOverLay.setWidth(15);
+        passedOverLay.setColor(colorPassed);
+        goingToOverLay.setColor(colorGoingTo);
 
 
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
@@ -266,26 +272,38 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                         closestIdx = i;
                     }
 
+
+
+
                 }
 
                 pathCoords.add(closestIdx + 1, currentPos);
                 for (int i = 0; i < pathCoords.size(); i++) {
-                    if (i <= closestIdx) passed.add(pathCoords.get(i));
-                    if (i >= closestIdx) goingTo.add(pathCoords.get(i));
+                    if (i <= closestIdx+1) passed.add(pathCoords.get(i));
+                    if (i > closestIdx) goingTo.add(pathCoords.get(i));
 
                 }
 
                 if (passed.size() >= 2) {
-                    passedOverLay.setCoords(passed);
-                    goingToOverLay.setCoords(goingTo);
+                    if(goingTo.size()<2){
+                        passedOverLay.setCoords(passed);
+                        showCustomToast("등산로를 모두 지나왔습니다!");
+                        passedOverLay.setMap(naverMap);
+                        goingToOverLay.setMap(null);
+                    } else {
+                        passedOverLay.setCoords(passed);
+                        goingToOverLay.setCoords(goingTo);
 
-                    passedOverLay.setMap(naverMap);
-                    goingToOverLay.setMap(naverMap);
+                        passedOverLay.setMap(naverMap);
+                        goingToOverLay.setMap(naverMap);
+                    }
+
 
                     Log.d("location class", String.valueOf(location));
                 } else {
                     Log.e("notPassedYet", "아직 지나간 길이 없습니다.");
                 }
+
 
                 //위치 변화시에 max 고도 측정.
                 if (location.getAltitude() > maxAltitude) {
@@ -294,6 +312,8 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
             }
         });
     }
+
+
 
     public static double distance_Between_LatLong(double lat1, double lon1, double lat2, double lon2) {
         lat1 = Math.toRadians(lat1);
