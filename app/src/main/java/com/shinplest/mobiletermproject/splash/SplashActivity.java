@@ -21,7 +21,6 @@ import java.util.TimerTask;
 
 public class SplashActivity extends BaseActivity {
 
-    //private Window mWindow;
     public static ArrayList<RecordItem> recordItems = new ArrayList<>();
 
     @Override
@@ -29,9 +28,6 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        //나중에 스플래쉬에 색 넣으면 주석 풀면 상단 아이콘 색이 변합니당
-        //mWindow = getWindow();
-        //mWindow.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {

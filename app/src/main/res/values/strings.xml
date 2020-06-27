@@ -17,4 +17,8 @@
     <string name="maxAltitude">최고 고도</string>
     <string name="checkRecord">등산기록을 확인해보세요!</string>
     <string name="searchMT">산 검색</string>
+    <string name="level">난이도</string>
+    <string name="between_distance">구간거리</string>
+    <string name="upspeed">상행속도</string>
+    <string name="downspeed">하행속도</string>
 </resources>
