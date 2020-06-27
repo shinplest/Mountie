@@ -337,13 +337,11 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         Canvas canvas = new Canvas(bitmap);
 
         Drawable background = view.getBackground();
-
         if(background!=null){
             background.draw(canvas);
         }else{
             canvas.drawColor(Color.WHITE);
         }
-
         view.draw(canvas);
         return bitmap;
     }
