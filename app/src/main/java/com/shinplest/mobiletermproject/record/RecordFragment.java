@@ -46,25 +46,6 @@ public class RecordFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-//        RecordItem recordItem = new RecordItem();
-//        Bundle bundle = this.getArguments();
-//        if (bundle != null) {
-//            bundle = getArguments();
-//            String filename = bundle.getString("filename");
-//            Log.d("filename", filename);
-//            File file = getActivity().getFileStreamPath(filename);
-//            Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
-//            recordItem.setRecord_img(bitmap);
-//
-//            recordItems.add(recordItem);
-//        }
-
-//        String filename = recordItems.get(0).toString();
-//        File file = getActivity().getFileStreamPath(filename);
-//        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//        recordItem.setRecord_img(bitmap);
-//        recordItems.add(recordItem);
-
         return view;
     }
 

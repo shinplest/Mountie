@@ -17,8 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -67,7 +67,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private List<LatLng> goingTo;
     private double maxAltitude;
 
-    private LinearLayout bottomSheet;
+    private ConstraintLayout bottomSheet;
     private BottomSheetBehavior recordBottomSheet;
     private TextView distanceTV;
     private TextView altitudeTV;
@@ -80,6 +80,9 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private int hour;
 
     private Button btnRecord;
+
+    int colorGoingTo;
+    int colorPassed;
 
 
     @Override
@@ -95,7 +98,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 requestCode, permissions, grantResults);
     }
 
-    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename, Bitmap bitmap) {
+    private RecordItem makeRecordObject(float distance, float avgSpeed, float time, double altitude, String filename) {
 
         //반올림 및 string value 처리.
         String distanceS = String.format("%.2f", distance);
@@ -110,7 +113,9 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         distanceTV.setText(distanceS + "km");
 
         RecordItem hikingRecord = new RecordItem();
-
+        File file = getFileStreamPath(filename);
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+        hikingRecord.setRecord_img(bitmap);
 
         hikingRecord.setAvgSpeed(avgSpeedS);
         hikingRecord.setMaxAltitude(altitudeS);
@@ -119,7 +124,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         hikingRecord.setDate(new Date());
         //수환님 여기서 file이름 저장해주세욤
         hikingRecord.setRecord_txt(filename);
-        hikingRecord.setRecord_img(bitmap);
         return hikingRecord;
     }
 
@@ -141,10 +145,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         maxAltitude = 0;
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
-        pathOverlay.setMap(naverMap);
-        pathOverlay.setProgress(0);
-        pathOverlay.setColor(Color.BLUE);
-        pathOverlay.setPassedColor(Color.GRAY);
         LocationOverlay locationOverlay = naverMap.getLocationOverlay();
         locationOverlay.setPosition(pathCoords.get(0));
 
@@ -152,8 +152,12 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         PathOverlay passedOverLay = new PathOverlay();
         PathOverlay goingToOverLay = new PathOverlay();
-        passedOverLay.setColor(Color.GRAY);
-        goingToOverLay.setColor(Color.BLUE);
+        passedOverLay.setOutlineColor(Color.TRANSPARENT);
+        goingToOverLay.setOutlineColor(Color.TRANSPARENT);
+        goingToOverLay.setWidth(15);
+        passedOverLay.setWidth(15);
+        passedOverLay.setColor(colorPassed);
+        goingToOverLay.setColor(colorGoingTo);
 
 
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
@@ -188,26 +192,38 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                         closestIdx = i;
                     }
 
+
+
+
                 }
 
                 pathCoords.add(closestIdx + 1, currentPos);
                 for (int i = 0; i < pathCoords.size(); i++) {
-                    if (i <= closestIdx) passed.add(pathCoords.get(i));
-                    if (i >= closestIdx) goingTo.add(pathCoords.get(i));
+                    if (i <= closestIdx+1) passed.add(pathCoords.get(i));
+                    if (i > closestIdx) goingTo.add(pathCoords.get(i));
 
                 }
 
                 if (passed.size() >= 2) {
-                    passedOverLay.setCoords(passed);
-                    goingToOverLay.setCoords(goingTo);
+                    if(goingTo.size()<2){
+                        passedOverLay.setCoords(passed);
+                        showCustomToast("등산로를 모두 지나왔습니다!");
+                        passedOverLay.setMap(naverMap);
+                        goingToOverLay.setMap(null);
+                    } else {
+                        passedOverLay.setCoords(passed);
+                        goingToOverLay.setCoords(goingTo);
 
-                    passedOverLay.setMap(naverMap);
-                    goingToOverLay.setMap(naverMap);
+                        passedOverLay.setMap(naverMap);
+                        goingToOverLay.setMap(naverMap);
+                    }
+
 
                     Log.d("location class", String.valueOf(location));
                 } else {
                     Log.e("notPassedYet", "아직 지나간 길이 없습니다.");
                 }
+
 
                 //위치 변화시에 max 고도 측정.
                 if (location.getAltitude() > maxAltitude) {
@@ -223,7 +239,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         setContentView(R.layout.activity_navigation);
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
-
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
         mapFragment.getMapAsync(this);
@@ -240,6 +255,10 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         stopwatch = findViewById(R.id.tv_timer);
         btnRecord = findViewById(R.id.record);
 
+        colorGoingTo = Color.rgb(163, 222, 213);
+        colorPassed = Color.GRAY;
+
+
         handler = new timeHandler();
 
         //스톱워치 쓰레드 시작.
@@ -248,7 +267,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         thread.start();
 
         //Record capture
-        View naviView = findViewById(R.id.naviMap);
         CoordinatorLayout navigationView = findViewById(R.id.navigation);
         //longClick ==> 기록 끝내기
         btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
@@ -271,18 +289,19 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 time = hour;//스톱워치 time(hr)값 설정.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
-                File file = getFileStreamPath(filename);
-//                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                hikingRecord.setRecord_img(bitmap);
-                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename, bitmap);
+                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
                 Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
 
-                bottomSheet.setVisibility(View.VISIBLE);
-                recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                Bundle bundle = new Bundle(1);
+                bundle.putString("newRecord", filename);
+                bundle.putFloat("distance", distance);
+                bundle.putFloat("speed", avgSpeed);
+                bundle.putInt("time", time);
+                bundle.putDouble("altitude", altitude);
+                recordFragment.setArguments(bundle);
 
-//                Bundle bundle = new Bundle();
-//                bundle.putString("filename", filename);
-//                recordFragment.setArguments(bundle);
+                bottomSheet.setVisibility(View.VISIBLE);
+                recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
 
                 recordItems.add(hikingRecord);
                 saveToSP(recordItems);
@@ -316,6 +335,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     public Bitmap getBitmapFromView(@NotNull View view) {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
+
         Drawable background = view.getBackground();
 
         if(background!=null){
@@ -323,6 +343,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         }else{
             canvas.drawColor(Color.WHITE);
         }
+
         view.draw(canvas);
         return bitmap;
     }
