@@ -138,6 +138,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 RecordFragment recordFragment = new RecordFragment();
                 //길게 끝내면 쓰레드 일시정지
                 thread.interrupt();
+                btnRecord.setVisibility(View.GONE);
 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
@@ -165,13 +166,11 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
             }
         });
 
-        //shortClick ==> 기록 시작하기 / 멈추기
-        //=> 길게 클릭하여 종료만 출력
+        //shortClick ==> 길게누르라고 알려주기
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCustomToast("기록을 끝내려면 길게 누르세요.");
-
             }
         });
     }
