@@ -2,6 +2,7 @@ package com.shinplest.mobiletermproject.record;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -78,26 +79,17 @@ public class RecordFragment extends Fragment {
         int time;
 
         Bundle bundle = getArguments();
+        SharedPreferences pref = getActivity().getSharedPreferences("SharedPreference", Context.MODE_PRIVATE);
+        pref.getString("RecordItems", "");
 
-        if (bundle != null) {
-            filename = bundle.getString("newRecord");
-            File file = getActivity().getFileStreamPath(filename);
-
-            maxAltitude = bundle.getDouble("altitude");
-            avgSpeed = bundle.getFloat("speed");
-            totalDistance = bundle.getFloat("distance");
-            time = bundle.getInt("time");
-
-            //각 값을 문자열로 변환
-            String altitude = String.valueOf(maxAltitude);
-            String speed = String.valueOf(avgSpeed);
-            String distance = String.valueOf(totalDistance);
-            String hour = String.valueOf(time);
-
-            if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                addItem(bitmap, filename, altitude, speed, distance, hour);
-            }
-        }
+//        if (bundle != null) {
+//            filename = bundle.getString("newRecord");
+//            File file = getActivity().getFileStreamPath(filename);
+//
+//            if (file.exists()) {
+//                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//                addItem(bitmap, filename, altitude, speed, distance, hour);
+//            }
+//        }
     }
 }

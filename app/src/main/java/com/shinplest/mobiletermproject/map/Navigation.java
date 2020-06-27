@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,12 +71,13 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private TextView altitudeTV;
     private TextView speedTV;
     private TextView timeTV;
+    private TextView currentTime;
 
     private TextView stopwatch;
     private Thread thread;
     private timeHandler handler;
     //시간 변수
-    private int hour;
+    private int stopHour = 0;
 
 
     @Override
@@ -115,6 +117,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
         stopwatch = findViewById(R.id.tv_timer);
+        currentTime = findViewById(R.id.tv_time);
 
         handler = new timeHandler();
 
@@ -129,6 +132,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 float avgSpeed;
                 int time;
                 double altitude;
+                stopwatch.setVisibility(v.GONE);
+                currentTime.setVisibility(v.GONE);
                 Bitmap bitmap = getBitmapFromView(navigationView);
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
@@ -136,19 +141,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
-                time = hour;//스톱워치 time(hr)값 설정.
+                time = stopHour;//스톱워치 time(hr)값 설정.
                 avgSpeed = distance / time;
                 altitude = maxAltitude;
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
                 Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
 
-                Bundle bundle = new Bundle(1);
-                bundle.putString("newRecord", filename);
-                bundle.putFloat("distance", distance);
-                bundle.putFloat("speed", avgSpeed);
-                bundle.putInt("time", time);
-                bundle.putDouble("altitude", altitude);
-                recordFragment.setArguments(bundle);
+//                Bundle bundle = new Bundle(1);
+//                bundle.putString("newRecord", filename);
+//                bundle.putFloat("distance", distance);
+//                bundle.putFloat("speed", avgSpeed);
+//                bundle.putInt("time", time);
+//                bundle.putDouble("altitude", altitude);
+//                recordFragment.setArguments(bundle);
 
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -173,6 +178,7 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                     record.setText("기록");
                     //스톱워치 쓰레드 멈춤.
                     thread.interrupt();
+                    Toast.makeText(getApplicationContext(), "기록을 저장하려면 버튼을 길게 눌러주세요", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -377,7 +383,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         public void handleMessage(@NonNull Message msg) {
             int sec = (msg.arg1 / 100) % 60;
             int min = (msg.arg1 / 100) / 60;
-            hour = msg.arg1 / 360000;
+            int hour = msg.arg1 / 360000;
+            stopHour = hour;
             String result = String.format("%02d:%02d:%02d", hour, min, sec);
             stopwatch.setText(result);
         }
