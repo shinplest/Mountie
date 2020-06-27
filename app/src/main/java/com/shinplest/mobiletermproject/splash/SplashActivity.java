@@ -2,6 +2,8 @@ package com.shinplest.mobiletermproject.splash;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -14,6 +16,7 @@ import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.main.MainActivity;
 import com.shinplest.mobiletermproject.record.RecordItem;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -37,7 +40,8 @@ public class SplashActivity extends BaseActivity {
                     recordItems = new ArrayList<>();
                 } else {
                     Gson gson = new GsonBuilder().create();
-                    Type listType = new TypeToken<ArrayList<RecordItem>>() {}.getType();
+                    Type listType = new TypeToken<ArrayList<RecordItem>>() {
+                    }.getType();
                     recordItems = gson.fromJson(json, listType);
                 }
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
