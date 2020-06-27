@@ -1,108 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/record_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
-    app:layout_behavior="@string/bottom_sheet_behavior"
+    android:orientation="vertical"
+    android:visibility="gone"
     app:behavior_hideable="false"
     app:behavior_peekHeight="250dp"
-    android:id="@+id/record_bottom_sheet"
-    android:visibility="gone"
-    android:orientation="vertical"
-    >
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="@string/checkRecord"/>
+            android:text="@string/checkRecord"
+            android:textSize="20dp" />
     </LinearLayout>
+
     <GridLayout
-        android:orientation="horizontal"
-        android:rowCount="2"
-        android:columnCount="2"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:rowCount="2">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_rowWeight="1"
-            android:layout_columnWeight="1">
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/distance" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
                 android:id="@+id/textDistance"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/distance" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_rowWeight="1"
-            android:layout_columnWeight="1">
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/time" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
                 android:id="@+id/textTime"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/time" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_rowWeight="1"
-            android:layout_columnWeight="1">
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/maxAltitude" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
                 android:id="@+id/textAltitude"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/maxAltitude" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_rowWeight="1"
-            android:layout_columnWeight="1">
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/avgSpeed" />
 
             <TextView
+                android:id="@+id/textSpeed"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:id="@+id/textSpeed"
                 android:text="@string/avgSpeed" />
         </LinearLayout>
-
-
     </GridLayout>
 
 </LinearLayout>

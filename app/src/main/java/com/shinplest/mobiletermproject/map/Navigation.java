@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
@@ -34,6 +33,7 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.shinplest.mobiletermproject.BaseActivity;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 import com.shinplest.mobiletermproject.record.RecordItem;
@@ -53,7 +53,7 @@ import java.util.List;
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
 import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 
-public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
+public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private final String TAG = Navigation.class.getSimpleName();
 
     private PathOverlay pathOverlay;
@@ -79,6 +79,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     //시간 변수
     private int stopHour = 0;
 
+    private Button btnRecord;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -95,13 +97,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_navigation);
-        locationSource =
-                new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
@@ -117,15 +116,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
         stopwatch = findViewById(R.id.tv_timer);
-        currentTime = findViewById(R.id.tv_time);
+        btnRecord = findViewById(R.id.record);
 
         handler = new timeHandler();
 
+        //스톱워치 쓰레드 시작.
+        //시작 시에 자동으로 쓰레드 시작
+        thread = new timeThread();
+        thread.start();
+
         //Record capture
-        Button record = findViewById(R.id.record);
         CoordinatorLayout navigationView = findViewById(R.id.navigation);
         //longClick ==> 기록 끝내기
-        record.setOnLongClickListener(new View.OnLongClickListener() {
+        btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 float distance;
@@ -138,6 +141,9 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
+                //길게 끝내면 쓰레드 일시정지
+                thread.interrupt();
+                btnRecord.setVisibility(View.GONE);
 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
@@ -146,6 +152,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 altitude = maxAltitude;
                 RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
                 Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
+                Toast.makeText(getApplicationContext(), distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename,
+                        Toast.LENGTH_LONG).show();
 
 //                Bundle bundle = new Bundle(1);
 //                bundle.putString("newRecord", filename);
@@ -165,22 +173,22 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
             }
         });
 
-        //shortClick ==> 기록 시작하기 / 멈추기
-        record.setOnClickListener(new View.OnClickListener() {
+        //shortClick ==> 길게누르라고 알려주기
+        btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (record.getText().equals("기록")) {
-                    record.setText("멈춤");
+                if (btnRecord.getText().equals("기록")) {
+                    btnRecord.setText("멈춤");
                     //스톱워치 쓰레드 시작.
                     thread = new timeThread();
                     thread.start();
-                } else if (record.getText().equals("멈춤")) {
-                    record.setText("기록");
+                } else if (btnRecord.getText().equals("멈춤")) {
+                    btnRecord.setText("기록");
                     //스톱워치 쓰레드 멈춤.
                     thread.interrupt();
-                    Toast.makeText(getApplicationContext(), "기록을 저장하려면 버튼을 길게 눌러주세요", Toast.LENGTH_LONG).show();
                 }
 
+                showCustomToast("기록을 끝내려면 길게 누르세요.");
             }
         });
     }
