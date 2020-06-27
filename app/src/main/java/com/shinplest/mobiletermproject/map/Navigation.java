@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
@@ -64,7 +65,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private List<LatLng> goingTo;
     private double maxAltitude;
 
-    private LinearLayout bottomSheet;
+    private ConstraintLayout bottomSheet;
     private BottomSheetBehavior recordBottomSheet;
     private TextView distanceTV;
     private TextView altitudeTV;
@@ -157,7 +158,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 recordFragment.setArguments(bundle);
 
                 bottomSheet.setVisibility(View.VISIBLE);
-                recordBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
 
                 recordItems.add(hikingRecord);
                 saveToSP(recordItems);

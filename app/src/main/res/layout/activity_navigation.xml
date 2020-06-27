@@ -15,27 +15,44 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_timer"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="00:00:00"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/shape_rounding_opacity"
+            android:elevation="10dp"
+            android:orientation="vertical"
+            android:paddingStart="40dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="5dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="진행시간"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tv_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="00:00:00"
+                android:textColor="@color/black"
+                android:textSize="40sp"
+                android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="진행시간"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+        </LinearLayout>
     </LinearLayout>
+
 
     <Button
         android:id="@+id/record"
