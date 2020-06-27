@@ -179,6 +179,7 @@
             android:elevation="10dp"
             android:text="@string/start"
             android:textSize="20sp"
+            android:textStyle="bold"
             sothree:layout_constraintBottom_toBottomOf="parent"
             sothree:layout_constraintEnd_toEndOf="parent"
             sothree:layout_constraintStart_toStartOf="parent"
