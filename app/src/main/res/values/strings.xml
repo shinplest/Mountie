@@ -34,6 +34,6 @@
     <string name="Mountie">마운티에서</string>
     <string name="total">총</string>
     <string name="timeInit">00:00</string>
-    <string name="walk">걸었습니다</string>
+    <string name="walk">걸었습니다!</string>
 
 </resources>

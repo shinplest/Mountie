@@ -341,15 +341,15 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
         mLineChart.getAxisRight().setEnabled(false);
 
         // X - Axis
-        mLineChart.getXAxis().setYOffset(10f);
+        mLineChart.getXAxis().setYOffset(15f);
         mLineChart.getXAxis().setTextSize(11f);
         mLineChart.getXAxis().setTextColor(Color.BLACK);
         mLineChart.getXAxis().setDrawAxisLine(false);
         mLineChart.getXAxis().setDrawGridLines(false);
 
         // Y - left - Axis
-        mLineChart.getAxisLeft().setXOffset(10f);
-        mLineChart.getAxisLeft().setTextSize(10f);
+        mLineChart.getAxisLeft().setXOffset(15f);
+        mLineChart.getAxisLeft().setTextSize(14f);
         mLineChart.getAxisLeft().setGranularity(1f);
         mLineChart.getAxisLeft().setAxisMinimum(0);
         mLineChart.getAxisLeft().setTextColor(mColorInt);
@@ -442,7 +442,7 @@ public class StatisticsFragment extends BaseFragment implements DatePickerDialog
             min = min % 60;
         }
 
-        totaltime.setText(String.valueOf(hour) + "시간" + String.valueOf(min) + "분");
+        totaltime.setText(String.valueOf(hour) + "시간 " + String.valueOf(min) + "분");
     }
 
     @Override
