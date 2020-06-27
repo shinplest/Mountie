@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shinplest.mobiletermproject.R;
+import com.shinplest.mobiletermproject.RecyclerDecoration;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,7 @@ public class SearchMainActivity extends AppCompatActivity implements TextWatcher
         adapter = new RecyclerViewAdapter(getApplicationContext(),mountainArrayList,mNameList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new RecyclerDecoration(10));
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {

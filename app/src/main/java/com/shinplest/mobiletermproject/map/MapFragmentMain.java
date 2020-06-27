@@ -263,10 +263,10 @@ public class MapFragmentMain extends BaseFragment implements OnMapReadyCallback,
                         sulMap.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                         Log.d(TAG, "i : " + paths.indexOf(overlay));
                         Properties properties = allProperties.get(paths.indexOf(overlay));
-                        mCatNam.setText("난이도 : " + properties.getCatNam());
-                        mSecLen.setText("구간거리 : " + properties.getSecLen() + "m");
-                        mUpMin.setText("상행속도 : " + properties.getUpMin() + "분");
-                        mDownMin.setText("하행속도 : " + properties.getDownMin() + "분");
+                        mCatNam.setText(properties.getCatNam());
+                        mSecLen.setText(properties.getSecLen() + "m");
+                        mUpMin.setText(properties.getUpMin() + "분");
+                        mDownMin.setText(properties.getDownMin() + "분");
 
 //                        ///본인 위치 확인
 //                        if (checkCurrentLocation()) {
