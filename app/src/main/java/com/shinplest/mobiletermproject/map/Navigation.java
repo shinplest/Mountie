@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
@@ -33,6 +32,7 @@ import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.shinplest.mobiletermproject.BaseActivity;
 import com.shinplest.mobiletermproject.R;
 import com.shinplest.mobiletermproject.record.RecordFragment;
 import com.shinplest.mobiletermproject.record.RecordItem;
@@ -52,7 +52,7 @@ import java.util.List;
 import static com.shinplest.mobiletermproject.map.MapFragmentMain.selectedPathOL;
 import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 
-public class Navigation extends AppCompatActivity implements OnMapReadyCallback {
+public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private final String TAG = Navigation.class.getSimpleName();
 
     private PathOverlay pathOverlay;
@@ -76,6 +76,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
     private timeHandler handler;
     private int hour;
 
+    private Button btnRecord;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -92,13 +94,10 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_navigation);
-        locationSource =
-                new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
@@ -114,14 +113,19 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         timeTV = findViewById(R.id.textTime);
         distanceTV = findViewById(R.id.textDistance);
         stopwatch = findViewById(R.id.tv_timer);
+        btnRecord = findViewById(R.id.record);
 
         handler = new timeHandler();
 
+        //스톱워치 쓰레드 시작.
+        //시작 시에 자동으로 쓰레드 시작
+        thread = new timeThread();
+        thread.start();
+
         //Record capture
-        Button record = findViewById(R.id.record);
         CoordinatorLayout navigationView = findViewById(R.id.navigation);
         //longClick ==> 기록 끝내기
-        record.setOnLongClickListener(new View.OnLongClickListener() {
+        btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 float distance;
@@ -132,6 +136,8 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
+                //길게 끝내면 쓰레드 일시정지
+                thread.interrupt();
 
                 //거리,시간,속도,최고고도 값.
                 distance = getAllPassedDistance();
@@ -160,19 +166,11 @@ public class Navigation extends AppCompatActivity implements OnMapReadyCallback 
         });
 
         //shortClick ==> 기록 시작하기 / 멈추기
-        record.setOnClickListener(new View.OnClickListener() {
+        //=> 길게 클릭하여 종료만 출력
+        btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (record.getText().equals("기록")) {
-                    record.setText("멈춤");
-                    //스톱워치 쓰레드 시작.
-                    thread = new timeThread();
-                    thread.start();
-                } else if (record.getText().equals("멈춤")) {
-                    record.setText("기록");
-                    //스톱워치 쓰레드 멈춤.
-                    thread.interrupt();
-                }
+                showCustomToast("기록을 끝내려면 길게 누르세요.");
 
             }
         });

@@ -1,32 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".map.Navigation"
-    >
+    tools:context=".map.Navigation">
 
-        <fragment
-            android:id="@+id/naviMap"
-            android:name="com.naver.maps.map.MapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <fragment
+        android:id="@+id/naviMap"
+        android:name="com.naver.maps.map.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="진행시간"
-            android:textColor="@color/black"
-            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/tv_timer"
@@ -35,7 +25,15 @@
             android:layout_gravity="center"
             android:text="00:00:00"
             android:textColor="@color/black"
-            android:textSize="25sp" />
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="진행시간"
+            android:textSize="15sp" />
 
     </LinearLayout>
 
@@ -46,7 +44,9 @@
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="50dp"
         android:background="@drawable/shape_circle"
-        android:text="@string/record"
-        android:textSize="25dp" />
-    <include layout="@layout/sheet_record"/>
+        android:text="완료"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <include layout="@layout/sheet_record" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
