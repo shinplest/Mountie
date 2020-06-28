@@ -19,6 +19,7 @@ import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 public class RecordFragment extends Fragment {
 
     private RecyclerView recyclerView;
+    RecordAdapter adapter;
 
     public RecordFragment() {
     }
@@ -29,11 +30,16 @@ public class RecordFragment extends Fragment {
         View view = inflater.inflate(R.layout.record_fragment, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.record_rv);
-
-        RecordAdapter adapter = new RecordAdapter(recordItems);
+        adapter = new RecordAdapter(recordItems);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.notifyDataSetChanged();
     }
 }
