@@ -1,12 +1,13 @@
 package com.shinplest.mobiletermproject.record;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import java.util.Date;
 
 public class RecordItem {
     private String recordTxt;
-    private Bitmap recordImg;
+    private Drawable recordImg;
     private String maxAltitude;
     private String avgSpeed;
     private String totalDistance;
@@ -29,11 +30,11 @@ public class RecordItem {
         this.recordTxt = recordTxt;
     }
 
-    public Bitmap getRecord_img() {
+    public Drawable getRecord_img() {
         return recordImg;
     }
 
-    public void setRecord_img(Bitmap recordImg) {
+    public void setRecord_img(Drawable recordImg) {
         this.recordImg = recordImg;
     }
 

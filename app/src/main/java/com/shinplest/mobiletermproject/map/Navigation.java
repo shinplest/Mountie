@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -266,7 +267,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         //Record capture
         CoordinatorLayout navigationView = findViewById(R.id.navigation);
-        View naviView = findViewById(R.id.naviMap);
         //longClick ==> 기록 끝내기
         btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -279,11 +279,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 String filename = saveBitmapToJpg(bitmap, setFileName());
 
                 RecordFragment recordFragment = new RecordFragment();
-
-                //파일이름 번들로 보내주기
-//                Bundle bundle = new Bundle();
-//                bundle.putString("filename", filename);
-//                recordFragment.setArguments(bundle);
 
                 //길게 끝내면 쓰레드 일시정지
                 thread.interrupt();
@@ -300,11 +295,14 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-                recordItems.add(hikingRecord);
-                saveToSP(recordItems);
-                File file = getFileStreamPath(filename);
-                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
-                hikingRecord.setRecord_img(bitmapFromFile);
+//                recordItems.add(hikingRecord);
+//                saveToSP(recordItems);
+//                File file = getFileStreamPath(filename);
+//                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
+//                hikingRecord.setRecord_img(bitmapFromFile);
+                //샘플데이터 - 화면 캡쳐를 하면 이 이미지로 정보가 나옴
+//                Drawable sample = getResources().getDrawable(R.drawable.map_sample);
+//                hikingRecord.setRecord_img(sample);
 
                 return true;
             }
