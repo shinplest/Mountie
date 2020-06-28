@@ -399,7 +399,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 bottomSheet.setVisibility(View.VISIBLE);
                 recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-                recordItems.add(hikingRecord);
+                recordItems.add(0, hikingRecord);
                 saveToSP(recordItems);
 //                File file = getFileStreamPath(filename);
 //                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
