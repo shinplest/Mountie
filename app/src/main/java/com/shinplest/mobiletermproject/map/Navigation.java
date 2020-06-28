@@ -80,6 +80,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private timeHandler handler;
     private int hour;
     private int min;
+    private boolean running = true;
 
     private Button btnRecord, btnFinish, btnResume;
 
@@ -87,20 +88,21 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     int colorPassed;
 
     //스톱워치 스레드
-    class timeThread extends Thread {
-        int i = 0;
-
+    class timeThread implements Runnable {
         public void run() {
+            int i = 0;
             while (true) {
-                Message msg = handler.obtainMessage();
-                msg.arg1 = i++;
-                handler.sendMessage(msg);
+                while (running) {
+                    Message msg = new Message();
+                    msg.arg1 = i++;
+                    handler.sendMessage(msg);
 
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                    return;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
             }
         }
@@ -110,7 +112,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         @Override
         public void handleMessage(@NonNull Message msg) {
             int sec = (msg.arg1 / 100) % 60;
-            int min = (msg.arg1 / 100) / 60;
+            min = (msg.arg1 / 100) / 60;
             hour = msg.arg1 / 360000;
 //            int sec = 0;
 //            min = (msg.arg1/100)&60;
@@ -362,11 +364,13 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         colorGoingTo = Color.rgb(163, 222, 213);
         colorPassed = Color.GRAY;
 
+        //초기 시간 설정
+        stopwatch.setText("00:00:00");
         handler = new timeHandler();
 
         //스톱워치 쓰레드 시작.
         //시작 시에 자동으로 쓰레드 시작
-        thread = new timeThread();
+        thread = new Thread(new timeThread());
         thread.start();
 
         //Record capture
@@ -385,7 +389,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
                 RecordFragment recordFragment = new RecordFragment();
 
                 //길게 끝내면 쓰레드 일시정지
-                thread.interrupt();
+                running = false;
                 btnRecord.setVisibility(View.GONE);
 
                 //거리,시간,속도,최고고도 값.
@@ -415,6 +419,8 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         btnFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                thread.interrupt();
+                stopwatch.setText("00:00:00");
                 finish();
             }
         });
@@ -422,7 +428,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         btnResume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                thread.start();
+                running = true;
             }
         });
 
