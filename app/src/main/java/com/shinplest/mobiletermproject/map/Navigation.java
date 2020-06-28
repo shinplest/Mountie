@@ -197,7 +197,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         goingToOverLay.setColor(colorGoingTo);
 
 
-        CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
+          CameraUpdate cameraUpdate = CameraUpdate.fitBounds(pathOverlay.getBounds())
                 .animate(CameraAnimation.Fly, 1200)
                 .finishCallback(() -> {
                     Log.d("navigation start", "camera update finished");
