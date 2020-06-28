@@ -45,7 +45,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         holder.speed.setText(item.getAvgSpeed());
         holder.distance.setText(item.getTotalDistance());
         holder.time.setText(item.getTime());
-        holder.img.setImageBitmap(item.getRecord_img());
+        holder.img.setImageDrawable(item.getRecord_img());
     }
 
     @Override

@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.shinplest.mobiletermproject.R;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.shinplest.mobiletermproject.splash.SplashActivity.recordItems;
 
@@ -46,7 +48,53 @@ public class RecordFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        //sample image
+        Drawable one = getResources().getDrawable(R.drawable.map_sample);
+        Drawable two = getResources().getDrawable(R.drawable.map_two);
+        Drawable three = getResources().getDrawable(R.drawable.map_three);
+        Drawable four = getResources().getDrawable(R.drawable.map_four);
+
+        addItem(0, 0, 0, 0,  one);
+        addItem(0, 0, 0, 0,  two);
+        addItem(0, 0, 0, 0,  three);
+        addItem(0, 0, 0, 0,  four);
+
         return view;
     }
 
+    private void addItem(float distance, float avgSpeed, float time, double altitude,  Drawable drawable) {
+
+        //반올림 및 string value 처리.
+        String distanceS = String.format("%.2f", distance);
+        String avgSpeedS = String.format("%.2f", avgSpeed);
+        String timeS = String.format("%.1f", time);
+        String altitudeS = String.format("%.2f", altitude);
+        String filename = setFileName() + ".jpg";
+
+        RecordItem hikingRecord = new RecordItem();
+//        File file = getFileStreamPath(filename);
+//        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//        hikingRecord.setRecord_img(bitmap);
+
+        hikingRecord.setAvgSpeed(avgSpeedS);
+        hikingRecord.setMaxAltitude(altitudeS);
+        hikingRecord.setTotalDistance(distanceS);
+        hikingRecord.setTime(timeS);
+        hikingRecord.setDate(new Date());
+        hikingRecord.setRecord_txt(filename);
+        hikingRecord.setRecord_img(drawable);
+
+        recordItems.add(hikingRecord);
+    }
+
+    public String setFileName() {
+        //파일이름은 현재시간+앱이름으로 설정
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        String filename = format.format(date) + "Mountie";
+
+        return filename;
+    }
 }
