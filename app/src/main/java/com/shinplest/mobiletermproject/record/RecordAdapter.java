@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.shinplest.mobiletermproject.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder> {
@@ -37,7 +38,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     public void onBindViewHolder(@NonNull RecordAdapter.ViewHolder holder, int position) {
         RecordItem item = mData.get(position);
 
-        holder.txt.setText(item.getRecord_txt());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일");
+        String formattedDate = sdf.format(item.getDate());
+
+        holder.tv_date.setText(formattedDate);
         holder.altitude.setText(item.getMaxAltitude());
         holder.speed.setText(item.getAvgSpeed());
         holder.distance.setText(item.getTotalDistance());
@@ -66,7 +70,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txt;
+        TextView tv_date;
         TextView altitude;
         TextView speed;
         TextView distance;
@@ -76,7 +80,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         ViewHolder(View itemView) {
             super(itemView);
 
-            txt = itemView.findViewById(R.id.record_txt);
+            tv_date = itemView.findViewById(R.id.tv_record_date);
             img = itemView.findViewById(R.id.record_img);
             altitude = itemView.findViewById(R.id.txt_maxAltitude);
             speed = itemView.findViewById(R.id.txt_avgSpeed);
