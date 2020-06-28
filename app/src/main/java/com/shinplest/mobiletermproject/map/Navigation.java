@@ -110,7 +110,7 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         @Override
         public void handleMessage(@NonNull Message msg) {
             int sec = (msg.arg1 / 100) % 60;
-            int min = (msg.arg1 / 100) / 60;
+            min = (msg.arg1 / 100) / 60;
             hour = msg.arg1 / 360000;
 //            int sec = 0;
 //            min = (msg.arg1/100)&60;
