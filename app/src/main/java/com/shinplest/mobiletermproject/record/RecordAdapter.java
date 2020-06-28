@@ -1,19 +1,18 @@
 package com.shinplest.mobiletermproject.record;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.shinplest.mobiletermproject.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder> {
@@ -37,15 +36,32 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecordAdapter.ViewHolder holder, int position) {
-
         RecordItem item = mData.get(position);
 
-        holder.txt.setText(item.getRecord_txt());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일");
+        String formattedDate = sdf.format(item.getDate());
+
+        holder.tv_date.setText(formattedDate);
         holder.altitude.setText(item.getMaxAltitude());
         holder.speed.setText(item.getAvgSpeed());
         holder.distance.setText(item.getTotalDistance());
         holder.time.setText(item.getTime());
-        holder.img.setImageDrawable(item.getRecord_img());
+        switch (position % 5) {
+            case 0:
+                holder.img.setImageResource(R.drawable.sample1);
+                break;
+            case 1:
+                holder.img.setImageResource(R.drawable.sample2);
+                break;
+            case 2:
+                holder.img.setImageResource(R.drawable.sample3);
+                break;
+            case 3:
+                holder.img.setImageResource(R.drawable.sample4);
+                break;
+            case 4:
+                holder.img.setImageResource(R.drawable.sample5);
+        }
     }
 
     @Override
@@ -54,7 +70,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txt;
+        TextView tv_date;
         TextView altitude;
         TextView speed;
         TextView distance;
@@ -64,7 +80,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         ViewHolder(View itemView) {
             super(itemView);
 
-            txt = itemView.findViewById(R.id.record_txt);
+            tv_date = itemView.findViewById(R.id.tv_record_date);
             img = itemView.findViewById(R.id.record_img);
             altitude = itemView.findViewById(R.id.txt_maxAltitude);
             speed = itemView.findViewById(R.id.txt_avgSpeed);

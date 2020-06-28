@@ -81,13 +81,11 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private int hour;
     private int min;
 
-    private Button btnRecord;
+    private Button btnRecord, btnFinish, btnResume;
 
     int colorGoingTo;
     int colorPassed;
 
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     //스톱워치 스레드
     class timeThread extends Thread {
         int i = 0;
@@ -111,12 +109,12 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     public class timeHandler extends Handler {
         @Override
         public void handleMessage(@NonNull Message msg) {
-//            int sec = (msg.arg1 / 100) % 60;
-//            int min = (msg.arg1 / 100) / 60;
-//            hour = msg.arg1 / 360000;
-            int sec = 0;
-            min = (msg.arg1/100)&60;
-            hour = (msg.arg1/100)/60;
+            int sec = (msg.arg1 / 100) % 60;
+            int min = (msg.arg1 / 100) / 60;
+            hour = msg.arg1 / 360000;
+//            int sec = 0;
+//            min = (msg.arg1/100)&60;
+//            hour = (msg.arg1/100)/60;
             String result = String.format("%02d:%02d:%02d", hour, min, sec);
             stopwatch.setText(result);
         }
@@ -145,8 +143,8 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         //bottom sheet에 setText(string)해줌.
         altitudeTV.setText(altitudeS + "m");
-        speedTV.setText(avgSpeedS + "km/h");
-        timeTV.setText(timeS + "h");
+        speedTV.setText(avgSpeedS + "m/min");
+        timeTV.setText(timeS + "min");
         distanceTV.setText(distanceS + "km");
 
         RecordItem hikingRecord = new RecordItem();
@@ -358,10 +356,11 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         distanceTV = findViewById(R.id.textDistance);
         stopwatch = findViewById(R.id.tv_timer);
         btnRecord = findViewById(R.id.record);
+        btnResume = findViewById(R.id.resume_record);
+        btnFinish = findViewById(R.id.finish_record);
 
         colorGoingTo = Color.rgb(163, 222, 213);
         colorPassed = Color.GRAY;
-
 
         handler = new timeHandler();
 
@@ -410,6 +409,20 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 //                hikingRecord.setRecord_img(sample);
 
                 return true;
+            }
+        });
+
+        btnFinish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        btnResume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                thread.start();
             }
         });
 
