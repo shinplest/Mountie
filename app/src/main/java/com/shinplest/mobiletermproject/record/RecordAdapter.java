@@ -42,10 +42,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         String formattedDate = sdf.format(item.getDate());
 
         holder.tv_date.setText(formattedDate);
-        holder.altitude.setText(item.getMaxAltitude());
-        holder.speed.setText(item.getAvgSpeed());
-        holder.distance.setText(item.getTotalDistance());
-        holder.time.setText(item.getTime());
+        holder.altitude.setText(item.getMaxAltitude() + "m");
+        holder.speed.setText(item.getAvgSpeed() + "m/분");
+        holder.distance.setText(item.getTotalDistance() + "km");
+        holder.time.setText(item.getTime() + "분");
         switch (position % 5) {
             case 0:
                 holder.img.setImageResource(R.drawable.sample1);
@@ -79,7 +79,6 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
 
         ViewHolder(View itemView) {
             super(itemView);
-
             tv_date = itemView.findViewById(R.id.tv_record_date);
             img = itemView.findViewById(R.id.record_img);
             altitude = itemView.findViewById(R.id.txt_maxAltitude);

@@ -149,7 +149,7 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/shape_circle"
         android:elevation="10dp"
-        android:text="@string/start"
+        android:text="재시작"
         android:textSize="20sp"
         android:textStyle="bold"
         sothree:layout_constraintBottom_toBottomOf="parent"
