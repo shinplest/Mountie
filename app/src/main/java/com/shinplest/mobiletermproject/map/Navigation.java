@@ -79,12 +79,48 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
     private Thread thread;
     private timeHandler handler;
     private int hour;
+    private int min;
 
     private Button btnRecord;
 
     int colorGoingTo;
     int colorPassed;
 
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //스톱워치 스레드
+    class timeThread extends Thread {
+        int i = 0;
+
+        public void run() {
+            while (true) {
+                Message msg = handler.obtainMessage();
+                msg.arg1 = i++;
+                handler.sendMessage(msg);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                    return;
+                }
+            }
+        }
+    }
+
+    public class timeHandler extends Handler {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+//            int sec = (msg.arg1 / 100) % 60;
+//            int min = (msg.arg1 / 100) / 60;
+//            hour = msg.arg1 / 360000;
+            int sec = 0;
+            min = (msg.arg1/100)&60;
+            hour = (msg.arg1/100)/60;
+            String result = String.format("%02d:%02d:%02d", hour, min, sec);
+            stopwatch.setText(result);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -232,91 +268,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation);
-
-        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
-        FragmentManager fm = getSupportFragmentManager();
-        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
-        mapFragment.getMapAsync(this);
-
-        pathCoords = selectedPathOL.getCoords();
-        pathOverlay = selectedPathOL;
-
-        bottomSheet = findViewById(R.id.record_bottom_sheet);
-        recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
-        altitudeTV = findViewById(R.id.textAltitude);
-        speedTV = findViewById(R.id.textSpeed);
-        timeTV = findViewById(R.id.textTime);
-        distanceTV = findViewById(R.id.textDistance);
-        stopwatch = findViewById(R.id.tv_timer);
-        btnRecord = findViewById(R.id.record);
-
-        colorGoingTo = Color.rgb(163, 222, 213);
-        colorPassed = Color.GRAY;
-
-
-        handler = new timeHandler();
-
-        //스톱워치 쓰레드 시작.
-        //시작 시에 자동으로 쓰레드 시작
-        thread = new timeThread();
-        thread.start();
-
-        //Record capture
-        CoordinatorLayout navigationView = findViewById(R.id.navigation);
-        //longClick ==> 기록 끝내기
-        btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                float distance;
-                float avgSpeed;
-                int time;
-                double altitude;
-                Bitmap bitmap = getBitmapFromView(navigationView);
-                String filename = saveBitmapToJpg(bitmap, setFileName());
-
-                RecordFragment recordFragment = new RecordFragment();
-
-                //길게 끝내면 쓰레드 일시정지
-                thread.interrupt();
-                btnRecord.setVisibility(View.GONE);
-
-                //거리,시간,속도,최고고도 값.
-                distance = getAllPassedDistance();
-                time = hour;//스톱워치 time(hr)값 설정.
-                avgSpeed = distance / time;
-                altitude = maxAltitude;
-                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
-                Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
-
-                bottomSheet.setVisibility(View.VISIBLE);
-                recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-//                recordItems.add(hikingRecord);
-//                saveToSP(recordItems);
-//                File file = getFileStreamPath(filename);
-//                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                hikingRecord.setRecord_img(bitmapFromFile);
-                //샘플데이터 - 화면 캡쳐를 하면 이 이미지로 정보가 나옴
-//                Drawable sample = getResources().getDrawable(R.drawable.map_sample);
-//                hikingRecord.setRecord_img(sample);
-
-                return true;
-            }
-        });
-
-        //shortClick ==> 길게누르라고 알려주기
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCustomToast("기록을 끝내려면 길게 누르세요.");
-            }
-        });
-    }
-
     public static double distance_Between_LatLong(double lat1, double lon1, double lat2, double lon2) {
         lat1 = Math.toRadians(lat1);
         lon1 = Math.toRadians(lon1);
@@ -376,38 +327,6 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
         return filename;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //스톱워치 스레드
-    class timeThread extends Thread {
-        int i = 0;
-
-        public void run() {
-            while (true) {
-                Message msg = handler.obtainMessage();
-                msg.arg1 = i++;
-                handler.sendMessage(msg);
-
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                    return;
-                }
-            }
-        }
-    }
-
-    public class timeHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            int sec = (msg.arg1 / 100) % 60;
-            int min = (msg.arg1 / 100) / 60;
-            hour = msg.arg1 / 360000;
-            String result = String.format("%02d:%02d:%02d", hour, min, sec);
-            stopwatch.setText(result);
-        }
-    }
-
     private void saveToSP(ArrayList<RecordItem> recordItemList) {
         Gson gson = new GsonBuilder().create();
         Type listType = new TypeToken<ArrayList<RecordItem>>() {
@@ -416,5 +335,90 @@ public class Navigation extends BaseActivity implements OnMapReadyCallback {
 
         SharedPreferences sp = getSharedPreferences("SharedPreference", MODE_PRIVATE);
         sp.edit().putString("RecordItems", json).apply();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_navigation);
+
+        locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.naviMap);
+        mapFragment.getMapAsync(this);
+
+        pathCoords = selectedPathOL.getCoords();
+        pathOverlay = selectedPathOL;
+
+        bottomSheet = findViewById(R.id.record_bottom_sheet);
+        recordBottomSheet = BottomSheetBehavior.from(bottomSheet);
+        altitudeTV = findViewById(R.id.textAltitude);
+        speedTV = findViewById(R.id.textSpeed);
+        timeTV = findViewById(R.id.textTime);
+        distanceTV = findViewById(R.id.textDistance);
+        stopwatch = findViewById(R.id.tv_timer);
+        btnRecord = findViewById(R.id.record);
+
+        colorGoingTo = Color.rgb(163, 222, 213);
+        colorPassed = Color.GRAY;
+
+
+        handler = new timeHandler();
+
+        //스톱워치 쓰레드 시작.
+        //시작 시에 자동으로 쓰레드 시작
+        thread = new timeThread();
+        thread.start();
+
+        //Record capture
+        CoordinatorLayout navigationView = findViewById(R.id.navigation);
+        //longClick ==> 기록 끝내기
+        btnRecord.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                float distance;
+                float avgSpeed;
+                int time;
+                double altitude;
+                Bitmap bitmap = getBitmapFromView(navigationView);
+                String filename = saveBitmapToJpg(bitmap, setFileName());
+
+                RecordFragment recordFragment = new RecordFragment();
+
+                //길게 끝내면 쓰레드 일시정지
+                thread.interrupt();
+                btnRecord.setVisibility(View.GONE);
+
+                //거리,시간,속도,최고고도 값.
+                distance = getAllPassedDistance();
+                time = min;//스톱워치 time(hr)값 설정.
+                avgSpeed = distance / time;
+                altitude = maxAltitude;
+                RecordItem hikingRecord = makeRecordObject(distance, avgSpeed, time, altitude, filename);
+                Log.d(TAG, distance + "" + avgSpeed + "" + time + "" + altitude + "" + filename);
+
+                bottomSheet.setVisibility(View.VISIBLE);
+                recordBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                recordItems.add(hikingRecord);
+                saveToSP(recordItems);
+//                File file = getFileStreamPath(filename);
+//                Bitmap bitmapFromFile = BitmapFactory.decodeFile(file.getAbsolutePath());
+//                hikingRecord.setRecord_img(bitmapFromFile);
+                //샘플데이터 - 화면 캡쳐를 하면 이 이미지로 정보가 나옴
+//                Drawable sample = getResources().getDrawable(R.drawable.map_sample);
+//                hikingRecord.setRecord_img(sample);
+
+                return true;
+            }
+        });
+
+        //shortClick ==> 길게누르라고 알려주기
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCustomToast("기록을 끝내려면 길게 누르세요.");
+            }
+        });
     }
 }
