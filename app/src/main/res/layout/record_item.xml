@@ -11,34 +11,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="20dp"
+        app:cardElevation="10dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:gravity="center"
                 android:id="@+id/ll_record_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
 
                 <TextView
                     android:id="@+id/tv_record_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="20dp"
-                    android:textSize="25sp"
-                    android:textColor="@color/time"
                     android:text="2019년 5월 13일"
+                    android:textColor="@color/time"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
+
                 <TextView
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="23sp"
-                    android:text="의 마운티"/>
+                    android:layout_marginLeft="5dp"
+                    android:textStyle="bold"
+                    android:text="의 마운티"
+                    android:textSize="23sp" />
             </LinearLayout>
 
 
@@ -50,11 +53,11 @@
                 android:scaleType="centerCrop" />
 
             <LinearLayout
-                android:layout_marginTop="10dp"
                 android:id="@+id/record_lin2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/record_img"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -101,11 +104,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginBottom="10dp"
                 android:id="@+id/record_lin3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/record_lin2"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
