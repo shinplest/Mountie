@@ -1,6 +1,6 @@
 # Mountie
 
-##등산로 정보 및 등산 기록 종합앱
+## 등산로 정보 및 등산 기록 종합앱
 
 Mountain + Bestie
 
@@ -8,11 +8,11 @@ Mountain + Bestie
 <img src="./readme_img/logo_2.png" width = "30%">
 </p>
 
-#Image
-<img src="./readme_img/sample1.png" width = "30%">
-<img src="./readme_img/sample2.png" width = "30%">
+# Image
+<img src="./readme_img/sample1.jpg" width = "30%">
+<img src="./readme_img/sample2.jpg" width = "30%">
 
-#Demo Video
+# Demo Video
 https://www.youtube.com/watch?v=F67EdiM2oRQ
 
 Your bestie, when you hike
