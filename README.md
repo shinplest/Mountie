@@ -8,7 +8,7 @@ Mountain + Bestie
 <img src="./readme_img/logo_2.png" width = "30%">
 </p>
 
-#Demo Images
+# Demo Images
 <img src="./readme_img/wiki1.PNG" width = "100%">
 <img src="./readme_img/wiki2.PNG" width = "100%">
 <img src="./readme_img/wiki3.PNG" width = "100%">
