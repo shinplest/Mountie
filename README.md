@@ -1,5 +1,5 @@
 # Mountain + Bestie = Mountie
- 
+<img src="./readme_img/logo_2.png" width = "30%">
 
 ## Your Best friend when you hike. 
 `Do you wanna hike?`
@@ -21,13 +21,10 @@ Our application is for beginner of hiking.
 
 ## Demo Images
 
-[[https://github.com/shinplest/Mountie/blob/master/readme_img/wiki1.PNG|alt=octocat]]
 
-
-[[https://github.com/shinplest/Mountie/blob/master/readme_img/wiki2.PNG|alt=octocat]]
-
-
-[[https://github.com/shinplest/Mountie/blob/master/readme_img/wiki3.PNG|alt=octocat]]
+<img src="./readme_img/wiki1.PNG" width = "30%">
+<img src="./readme_img/wiki2.PNG" width = "30%">
+<img src="./readme_img/wiki3.PNG" width = "30%">
 
 
 ## Demo Video
