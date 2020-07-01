@@ -1,5 +1,5 @@
 # Mountain + Bestie = Mountie
-<img src="./readme_img/logo_2.png" width = "30%">
+ 
 
 ## Your Best friend when you hike. 
 `Do you wanna hike?`
@@ -33,9 +33,11 @@ Our application is for beginner of hiking.
 
 
 ## Key features
-- Show all trails in Korea
+- Show all hiking trails in Korea
 - Search near mountain trails
+  * Matching the hiking trail closet to my current location
 - Record when you hike and save it
+  * Show captured photos and each information (altitude, time, speed, distance)
 - Give information about trains(ex, level of difficulty, altitude)
 
 
@@ -50,6 +52,8 @@ Our application is for beginner of hiking.
   * Store mountain's information (name, latitude and longitude) with arraylist and show mountain's name with recycler view
   * You can search mountain by name and when you click the mountain's name, map goes to that mountain
 - Record fragment to save hiking data
+  * Upload maps and information captured by the navigation to the Records view
+  * Each of the information from navigation (time, speed, distance, altitude) is saved to a storage location in the app using sharedPreference and then recalled to a record
 - Dashboard fragment to show statistical graph
   * You can see how many hours you climbed by text and how many time you climbed by graph
   * We get data which is stored in shared preference and calculate it to show you 
@@ -70,17 +74,14 @@ Use NaverMap on **Map** and **Navigation** View. The reason is the latest update
 Gson Libaray use in data parsing from the **raw json data to java class.**
 
 * `LineChart`
-
+Draw LineChart using MPAndroidChart library ( https://github.com/PhilJay/MPAndroidChart )
 
 ## Team Member
-신재형
-https://github.com/shinplest
 
-유희진
-https://github.com/Huijiny
+|   |신재형|유희진|정수경|전수환|
+|:---:|:---:|:---:|:---:|:---:|
+|Student ID|201634943|201632216|201835522|201835519|
+|E-mail|shinplest@gmail.com|jiin20803@gmail.com|jsk_1025@naver.com|jsuhwan34@gmail.com|
+|Github address|https://github.com/shinplest|https://github.com/Huijiny|https://github.com/JeongSuKyoung|https://github.com/JeonSuHwan|
+|Role|Get API with retrofit, Implement and design Navigation Activity|Implement and design Navigation Activity|Implement and Design Dash-board view / Search Activity|Implement and design Record view|
 
-정수경
-https://github.com/JeongSuKyoung
-
-전수환
-https://github.com/JeonSuHwan
