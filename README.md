@@ -22,9 +22,9 @@ Our application is for beginner of hiking.
 ## Demo Images
 
 
-<img src="./readme_img/wiki1.PNG" width = "30%">
-<img src="./readme_img/wiki2.PNG" width = "30%">
-<img src="./readme_img/wiki3.PNG" width = "30%">
+<img src="./readme_img/wiki1.PNG" width = "100%">
+<img src="./readme_img/wiki2.PNG" width = "100%">
+<img src="./readme_img/wiki3.PNG" width = "100%">
 
 
 ## Demo Video
